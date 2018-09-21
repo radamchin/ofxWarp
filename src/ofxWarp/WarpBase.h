@@ -127,7 +127,6 @@ namespace ofxWarp
 		size_t getNumControlsX() const;
 		//! return the number of control points rows
 		size_t getNumControlsY() const;
-
 		virtual void rotateClockwise() = 0;
 		virtual void rotateCounterclockwise() = 0;
 
