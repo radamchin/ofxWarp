@@ -5,7 +5,8 @@
 namespace ofxWarp
 {
 	//--------------------------------------------------------------
-	std::filesystem::path WarpBase::shaderPath = std::filesystem::path("shaders") / "ofxWarp";
+    //std::filesystem::path WarpBase::shaderPath = std::filesystem::path("shaders") / "ofxWarp";
+    std::filesystem::path WarpBase::shaderPath = std::filesystem::path("ofxWarp");
 
 	//--------------------------------------------------------------
 	void WarpBase::setShaderPath(const std::filesystem::path shaderPath)
@@ -47,6 +48,8 @@ namespace ofxWarp
 	void WarpBase::serialize(nlohmann::json & json)
 	{
 		// Main parameters.
+        json["width"] = this->width;
+        json["height"] = this->height;
 		json["type"] = this->type;
 		json["brightness"] = this->brightness;
 
@@ -91,6 +94,8 @@ namespace ofxWarp
 	void WarpBase::deserialize(const nlohmann::json & json)
 	{
 		// Main parameters.
+        this->width = json["width"];
+        this->height = json["height"];
 		int typeAsInt = json["type"];
 		this->type = (Type)typeAsInt;
 		this->brightness = json["brightness"];

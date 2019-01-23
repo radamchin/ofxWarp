@@ -11,6 +11,9 @@ namespace ofxWarp
 		Controller();
 		~Controller();
 
+
+        void removeListeners();
+
 		//! write a settings json file
 		bool saveSettings(const std::string & filePath);
 		//! read a settings json file
@@ -45,20 +48,27 @@ namespace ofxWarp
 
 		//! handle mouseMoved events for multiple warps
 		void onMouseMoved(ofMouseEventArgs & args);
+        void onMouseMoved(int x, int y);
 		//! handle mousePressed events for multiple warps
 		void onMousePressed(ofMouseEventArgs & args);
+        void onMousePressed(int x, int y);
 		//! handle mouseDragged events for multiple warps
 		void onMouseDragged(ofMouseEventArgs & args);
+        void onMouseDragged(int x, int y);
 		//! handle mouseReleased events for multiple warps
 		void onMouseReleased(ofMouseEventArgs & args);
+        void onMouseReleased(int x, int y);
 
 		//! handle keyPressed events for multiple warps
 		void onKeyPressed(ofKeyEventArgs & args);
+        void onKeyPressed(int key);
 		//! handle keyReleased events for multiple warps
 		void onKeyReleased(ofKeyEventArgs & args);
+        void onKeyReleased(int key);
 
 		//! handle windowResized events for multiple warps
 		void onWindowResized(ofResizeEventArgs & args);
+        void onWindowResized(int w, int h);
 
 	protected:
 		//! check all warps and select the closest control point

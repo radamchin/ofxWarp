@@ -12,7 +12,7 @@ namespace ofxWarp
 	Controller::Controller()
 		: focusedIndex(-1)
 	{
-		ofAddListener(ofEvents().mouseMoved, this, &Controller::onMouseMoved);
+        /*ofAddListener(ofEvents().mouseMoved, this, &Controller::onMouseMoved);
 		ofAddListener(ofEvents().mousePressed, this, &Controller::onMousePressed);
 		ofAddListener(ofEvents().mouseDragged, this, &Controller::onMouseDragged);
 		ofAddListener(ofEvents().mouseReleased, this, &Controller::onMouseReleased);
@@ -20,13 +20,13 @@ namespace ofxWarp
 		ofAddListener(ofEvents().keyPressed, this, &Controller::onKeyPressed);
 		ofAddListener(ofEvents().keyReleased, this, &Controller::onKeyReleased);
 
-		ofAddListener(ofEvents().windowResized, this, &Controller::onWindowResized);
+        ofAddListener(ofEvents().windowResized, this, &Controller::onWindowResized);*/
 	}
 	
 	//--------------------------------------------------------------
 	Controller::~Controller()
 	{
-		ofRemoveListener(ofEvents().mouseMoved, this, &Controller::onMouseMoved);
+        /*ofRemoveListener(ofEvents().mouseMoved, this, &Controller::onMouseMoved);
 		ofRemoveListener(ofEvents().mousePressed, this, &Controller::onMousePressed);
 		ofRemoveListener(ofEvents().mouseDragged, this, &Controller::onMouseDragged);
 		ofRemoveListener(ofEvents().mouseReleased, this, &Controller::onMouseReleased);
@@ -36,8 +36,23 @@ namespace ofxWarp
 
 		ofRemoveListener(ofEvents().windowResized, this, &Controller::onWindowResized);
 		
-		this->warps.clear();
+        this->warps.clear();*/
 	}
+
+    //--------------------------------------------------------------
+    void Controller::removeListeners(){
+        ofRemoveListener(ofEvents().mouseMoved, this, &Controller::onMouseMoved);
+        ofRemoveListener(ofEvents().mousePressed, this, &Controller::onMousePressed);
+        ofRemoveListener(ofEvents().mouseDragged, this, &Controller::onMouseDragged);
+        ofRemoveListener(ofEvents().mouseReleased, this, &Controller::onMouseReleased);
+
+        ofRemoveListener(ofEvents().keyPressed, this, &Controller::onKeyPressed);
+        ofRemoveListener(ofEvents().keyReleased, this, &Controller::onKeyReleased);
+
+        ofRemoveListener(ofEvents().windowResized, this, &Controller::onWindowResized);
+
+        this->warps.clear();
+    }
 
 	//--------------------------------------------------------------
 	bool Controller::saveSettings(const std::string & filePath)
@@ -113,6 +128,7 @@ namespace ofxWarp
 			if (warp)
 			{
 				warp->deserialize(jsonWarp);
+                warp->setSize(warp->getWidth(),warp->getHeight());
 				this->warps.push_back(warp);
 			}
 		}
@@ -209,6 +225,13 @@ namespace ofxWarp
 		this->selectClosestControlPoint(args);
 	}
 
+    void Controller::onMouseMoved(int x, int y){
+        ofMouseEventArgs temp;
+        temp.x = x;
+        temp.y = y;
+        this->selectClosestControlPoint(temp);
+    }
+
 	//--------------------------------------------------------------
 	void Controller::onMousePressed(ofMouseEventArgs & args)
 	{
@@ -221,6 +244,19 @@ namespace ofxWarp
 		}
 	}
 
+    void Controller::onMousePressed(int x, int y){
+        ofMouseEventArgs temp;
+        temp.x = x;
+        temp.y = y;
+
+        this->selectClosestControlPoint(temp);
+
+        if (this->focusedIndex < this->warps.size())
+        {
+            this->warps[this->focusedIndex]->handleCursorDown(temp);
+        }
+    }
+
 	//--------------------------------------------------------------
 	void Controller::onMouseDragged(ofMouseEventArgs & args)
 	{
@@ -230,9 +266,24 @@ namespace ofxWarp
 		}
 	}
 
+    void Controller::onMouseDragged(int x, int y){
+        ofMouseEventArgs temp;
+        temp.x = x;
+        temp.y = y;
+
+        if (this->focusedIndex < this->warps.size())
+        {
+            this->warps[this->focusedIndex]->handleCursorDrag(temp);
+        }
+    }
+
 	//--------------------------------------------------------------
 	void Controller::onMouseReleased(ofMouseEventArgs & args)
 	{}
+
+    void Controller::onMouseReleased(int x, int y){
+
+    }
 
 	//--------------------------------------------------------------
 	void Controller::onKeyPressed(ofKeyEventArgs & args)
@@ -395,9 +446,172 @@ namespace ofxWarp
 		}
 	}
 
+    void Controller::onKeyPressed(int key){
+        if (key == 'w')
+        {
+            for (auto warp : this->warps)
+            {
+                warp->toggleEditing();
+            }
+        }
+        else if (this->focusedIndex < this->warps.size())
+        {
+            auto warp = this->warps[this->focusedIndex];
+
+            if (key == '-')
+            {
+                warp->setBrightness(MAX(0.0f, warp->getBrightness() - 0.01f));
+            }
+            else if (key == '+')
+            {
+                warp->setBrightness(MIN(1.0f, warp->getBrightness() + 0.01f));
+            }
+            else if (key == 'r')
+            {
+                warp->reset();
+            }
+            else if (key == OF_KEY_TAB)
+            {
+                // Select the next of previous (+ SHIFT) control point.
+                size_t nextIndex;
+                auto selectedIndex = warp->getSelectedControlPoint();
+                if (ofGetKeyPressed(OF_KEY_SHIFT))
+                {
+                    if (selectedIndex == 0)
+                    {
+                        nextIndex = warp->getNumControlPoints() - 1;
+                    }
+                    else
+                    {
+                        nextIndex = selectedIndex - 1;
+                    }
+                }
+                else
+                {
+                    nextIndex = (selectedIndex + 1) % warp->getNumControlPoints();
+                }
+                warp->selectControlPoint(nextIndex);
+            }
+            else if (key == OF_KEY_UP || key == OF_KEY_DOWN || key == OF_KEY_LEFT || key == OF_KEY_RIGHT)
+            {
+                auto step = ofGetKeyPressed(OF_KEY_SHIFT) ? 10.0f : 0.5f;
+                auto shift = glm::vec2(0.0f);
+                if (key == OF_KEY_UP)
+                {
+                    shift.y = -step / (float)ofGetHeight();
+                }
+                else if (key == OF_KEY_DOWN)
+                {
+                    shift.y = step / (float)ofGetHeight();
+                }
+                else if (key == OF_KEY_LEFT)
+                {
+                    shift.x = -step / (float)ofGetWidth();
+                }
+                else
+                {
+                    shift.x = step / (float)ofGetWidth();
+                }
+                warp->moveControlPoint(warp->getSelectedControlPoint(), shift);
+            }
+            else if (key == OF_KEY_F9)
+            {
+                warp->rotateCounterclockwise();
+            }
+            else if (key == OF_KEY_F10)
+            {
+                warp->rotateClockwise();
+            }
+            else if (key == OF_KEY_F11)
+            {
+                warp->flipHorizontal();
+            }
+            else if (key == OF_KEY_F12)
+            {
+                warp->flipVertical();
+            }
+            else if (warp->getType() == WarpBase::TYPE_BILINEAR || warp->getType() == WarpBase::TYPE_PERSPECTIVE_BILINEAR)
+            {
+                // The rest of the controls only apply to Bilinear warps.
+                auto warpBilinear = std::dynamic_pointer_cast<WarpBilinear>(warp);
+                if (warpBilinear)
+                {
+                    if (key == OF_KEY_F1)
+                    {
+                        // Reduce the number of horizontal control points.
+                        if (ofGetKeyPressed(OF_KEY_SHIFT))
+                        {
+                            warpBilinear->setNumControlsX(warpBilinear->getNumControlsX() - 1);
+                        }
+                        else
+                        {
+                            warpBilinear->setNumControlsX((warpBilinear->getNumControlsX() + 1) / 2);
+                        }
+                    }
+                    else if (key == OF_KEY_F2)
+                    {
+                        // Increase the number of horizontal control points.
+                        if (ofGetKeyPressed(OF_KEY_SHIFT))
+                        {
+                            warpBilinear->setNumControlsX(warpBilinear->getNumControlsX() + 1);
+                        }
+                        else
+                        {
+                            warpBilinear->setNumControlsX(warpBilinear->getNumControlsX() * 2 - 1);
+                        }
+                    }
+                    else if (key == OF_KEY_F3)
+                    {
+                        // Reduce the number of vertical control points.
+                        if (ofGetKeyPressed(OF_KEY_SHIFT))
+                        {
+                            warpBilinear->setNumControlsY(warpBilinear->getNumControlsY() - 1);
+                        }
+                        else
+                        {
+                            warpBilinear->setNumControlsY((warpBilinear->getNumControlsY() + 1) / 2);
+                        }
+                    }
+                    else if (key == OF_KEY_F4)
+                    {
+                        // Increase the number of vertical control points.
+                        if (ofGetKeyPressed(OF_KEY_SHIFT))
+                        {
+                            warpBilinear->setNumControlsY(warpBilinear->getNumControlsY() + 1);
+                        }
+                        else
+                        {
+                            warpBilinear->setNumControlsY(warpBilinear->getNumControlsY() * 2 - 1);
+                        }
+                    }
+                    else if (key == OF_KEY_F5)
+                    {
+                        warpBilinear->decreaseResolution();
+                    }
+                    else if (key == OF_KEY_F6)
+                    {
+                        warpBilinear->increaseResolution();
+                    }
+                    else if (key == OF_KEY_F7)
+                    {
+                        warpBilinear->setAdaptive(!warpBilinear->getAdaptive());
+                    }
+                    else if (key == 'm')
+                    {
+                        warpBilinear->setLinear(!warpBilinear->getLinear());
+                    }
+                }
+            }
+        }
+    }
+
 	//--------------------------------------------------------------
 	void Controller::onKeyReleased(ofKeyEventArgs & args)
 	{}
+
+    void Controller::onKeyReleased(int key){
+
+    }
 
 	//--------------------------------------------------------------
 	void Controller::onWindowResized(ofResizeEventArgs & args)
@@ -407,4 +621,8 @@ namespace ofxWarp
 			warp->handleWindowResize(args.width, args.height);
 		}
 	}
+
+    void Controller::onWindowResized(int w, int h){
+
+    }
 }

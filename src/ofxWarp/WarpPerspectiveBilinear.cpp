@@ -190,6 +190,8 @@ namespace ofxWarp
 	{
 		if (!this->editing || this->selectedIndex >= this->controlPoints.size()) return false;
 
+        //ofLog(OF_LOG_NOTICE,"controlPoint: %f:%f",this->getControlPoint(this->selectedIndex).x,this->getControlPoint(this->selectedIndex).y);
+
 		// Depending on selected control point, let perspective or bilinear warp handle it.
 		if (this->isCorner(this->selectedIndex))
 		{
