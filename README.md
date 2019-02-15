@@ -25,6 +25,7 @@ Image warping, as used in this addon, is the process of manipulating an image so
 
 #### Controls
 You can use `ofxWarp::Controller` to adjust your warps:
+
 * `w` to toggle editing on all warps
 * Use mouse or cursor keys to move the currently selected control point
 * `TAB` to select the next control point
@@ -34,10 +35,12 @@ You can use `ofxWarp::Controller` to adjust your warps:
 * `F12` to flip content vertically
 
 For Perspective warps only:
+
 * `F9` to rotate content counter-clockwise
 * `F10` to rotate content clockwise
 
 For Bilinear warps only:
+
 * `m` to toggle between linear and curved mapping
 * `F1` to reduce the number of horizontal control points
 * `F2` to increase the number of horizontal control points
@@ -46,3 +49,7 @@ For Bilinear warps only:
 * `F5` to decrease the mesh resolution
 * `F6` to increase the mesh resolution
 * `F7` to toggle adaptive mesh resolution
+
+# Notes
+* Each warp has four edges for edge blending. Use that `setGamma`, `setLuminance`, and `setExponent` to blend the edges
+* Each warp can have multiple control points
