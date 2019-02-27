@@ -205,8 +205,12 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::onMouseMoved(ofMouseEventArgs & args)
 	{
+        /*
+         Removing hover affect to ensure that multiple control points are not clicked on at once.
+         Found this to be difficult to use at large scale. Uncomment to add this funciton back in.
 		// Find and select closest control point.
 		this->selectClosestControlPoint(args);
+         */
 	}
 
 	//--------------------------------------------------------------

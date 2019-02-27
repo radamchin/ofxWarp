@@ -482,7 +482,8 @@ namespace ofxWarp
 		else if (selected) 
 		{
 			auto scale = 0.9f + 0.2f * sinf(6.0f * (ofGetElapsedTimef() - this->selectedTime));
-			queueControlPoint(pos, ofFloatColor(0.9f, 0.9f, 0.9f), scale);
+			//queueControlPoint(pos, ofFloatColor(0.9f, 0.9f, 0.9f), scale);
+            queueControlPoint(pos, ofFloatColor(0.0f, 1.0f, 0.0f), scale);
 		}
 		else if (attached) 
 		{
