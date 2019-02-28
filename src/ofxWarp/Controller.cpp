@@ -166,34 +166,61 @@ namespace ofxWarp
 		return this->warps.size();
 	}
 
+    //--------------------------------------------------------------
+    size_t Controller::findClosestControlPoint(const glm::vec2 & pos)
+    {
+        size_t pointIdx = -1;
+        auto distance = std::numeric_limits<float>::max();
+        
+        // Find warp and distance to closest control point.
+        for (int i = this->warps.size() - 1; i >= 0; --i)
+        {
+            float candidate;
+            auto idx = this->warps[i]->findClosestControlPoint(pos, &candidate);
+            if (candidate < distance && this->warps[i]->isEditing())
+            {
+                distance = candidate;
+                pointIdx = idx;
+            }
+        }
+        
+        return pointIdx;
+    }
+    
+    //--------------------------------------------------------------
+    size_t Controller::findClosestWarp(const glm::vec2 & pos)
+    {
+        size_t warpIdx = -1;
+        auto distance = std::numeric_limits<float>::max();
+        
+        // Find warp and distance to closest control point.
+        for (int i = this->warps.size() - 1; i >= 0; --i)
+        {
+            float candidate;
+            auto idx = this->warps[i]->findClosestControlPoint(pos, &candidate);
+            if (candidate < distance && this->warps[i]->isEditing())
+            {
+                distance = candidate;
+                warpIdx = i;
+            }
+        }
+        
+        return warpIdx;
+    }
+    
 	//--------------------------------------------------------------
 	void Controller::selectClosestControlPoint(const glm::vec2 & pos)
 	{
-		size_t warpIdx = -1;
-		size_t pointIdx = -1;
-		auto distance = std::numeric_limits<float>::max();
 
-		// Find warp and distance to closest control point.
-		for (int i = this->warps.size() - 1; i >= 0; --i)
-		{
-			float candidate;
-			auto idx = this->warps[i]->findClosestControlPoint(pos, &candidate);
-			if (candidate < distance && this->warps[i]->isEditing())
-			{
-				distance = candidate;
-				pointIdx = idx;
-				warpIdx = i;
-			}
-		}
-
-		focusedIndex = warpIdx;
-
+		focusedIndex = findClosestWarp(pos);
+        
 		// Select the closest control point and deselect all others.
 		for (int i = this->warps.size() - 1; i >= 0; --i)
 		{
 			if (i == this->focusedIndex)
 			{
-				this->warps[i]->selectControlPoint(pointIdx);
+                focusedIndexControlPoint = findClosestControlPoint(pos);
+				this->warps[i]->selectControlPoint(focusedIndexControlPoint);
 			}
 			else
 			{
@@ -207,36 +234,90 @@ namespace ofxWarp
 	{
         /*
          Removing hover affect to ensure that multiple control points are not clicked on at once.
-         Found this to be difficult to use at large scale. Uncomment to add this funciton back in.
-		// Find and select closest control point.
-		this->selectClosestControlPoint(args);
+         Found this feature to be difficult to use at large scale. Uncomment to add this funciton back in.
          */
+		// Find and select closest control point.
+		//this->selectClosestControlPoint(args);
+         
 	}
 
 	//--------------------------------------------------------------
 	void Controller::onMousePressed(ofMouseEventArgs & args)
 	{
-		// Find and select closest control point.
-		this->selectClosestControlPoint(args);
-
-		if (this->focusedIndex < this->warps.size())
-		{
-			this->warps[this->focusedIndex]->handleCursorDown(args);
-		}
+        switch(focusState)
+        {
+            case FocusStates::NO_CONTROL_POINT:
+            {
+                
+                // Find and select closest control point.
+                this->selectClosestControlPoint(args);
+                
+                if (this->focusedIndex < this->warps.size())
+                {
+                    this->warps[this->focusedIndex]->handleCursorDown(args);
+                }
+                
+                setFocusState(FocusStates::ACTIVE_CONTROL_POINT);
+                break;
+            }
+            case FocusStates::ACTIVE_CONTROL_POINT:
+            {
+                this->warps[this->focusedIndex]->handleCursorDown(args);
+                break;
+            }
+            default: break;
+        }
+        
+       
 	}
 
 	//--------------------------------------------------------------
 	void Controller::onMouseDragged(ofMouseEventArgs & args)
 	{
-		if (this->focusedIndex < this->warps.size())
-		{
-			this->warps[this->focusedIndex]->handleCursorDrag(args);
-		}
+        switch(focusState)
+        {
+            case FocusStates::NO_CONTROL_POINT: { break;}
+            case FocusStates::ACTIVE_CONTROL_POINT:
+            {
+                
+                if (this->focusedIndex < this->warps.size())
+                {
+                    this->warps[this->focusedIndex]->handleCursorDrag(args);
+                }
+                break;
+            }
+            default: break;
+        }
+    
 	}
 
 	//--------------------------------------------------------------
 	void Controller::onMouseReleased(ofMouseEventArgs & args)
-	{}
+	{
+        
+        switch(focusState)
+        {
+            case FocusStates::NO_CONTROL_POINT: { break;}
+            case FocusStates::ACTIVE_CONTROL_POINT:
+            {
+                
+                if (ofGetKeyPressed(OF_KEY_SHIFT) &&
+                    focusedIndexControlPoint == findClosestControlPoint(args)
+                    )
+                {
+                    setFocusState(FocusStates::NO_CONTROL_POINT);
+                    
+                    //Unselect control point
+                    warps[focusedIndex]->deselectControlPoint();
+                    
+                }
+                break;
+            }
+            default: break;
+        }
+        
+        
+    }
 
 	//--------------------------------------------------------------
 	void Controller::onKeyPressed(ofKeyEventArgs & args)
@@ -248,7 +329,7 @@ namespace ofxWarp
 				warp->toggleEditing();
 			}
 		}
-		else if (this->focusedIndex < this->warps.size())
+        else if (this->focusedIndex < this->warps.size())
 		{
 			auto warp = this->warps[this->focusedIndex];
 
@@ -399,11 +480,16 @@ namespace ofxWarp
 				}
 			}
 		}
+        
+
+       
 	}
 
 	//--------------------------------------------------------------
 	void Controller::onKeyReleased(ofKeyEventArgs & args)
-	{}
+    {
+    
+    }
 
 	//--------------------------------------------------------------
 	void Controller::onWindowResized(ofResizeEventArgs & args)
@@ -413,4 +499,19 @@ namespace ofxWarp
 			warp->handleWindowResize(args.width, args.height);
 		}
 	}
+    
+    
+#pragma mark mark FOCUS STATES
+    //--------------------------------------------------------------
+    void Controller::setFocusState(FocusStates _focusState)
+    {
+        focusState = _focusState;
+        
+        switch(focusState)
+        {
+            case FocusStates::NO_CONTROL_POINT: { break;}
+            case FocusStates::ACTIVE_CONTROL_POINT: { break;}
+            default: break;
+        }
+    }
 }
