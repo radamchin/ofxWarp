@@ -60,6 +60,9 @@ namespace ofxWarp
 		//! handle windowResized events for multiple warps
 		void onWindowResized(ofResizeEventArgs & args);
 
+        //! check to see if warps are in editing mode
+        bool areWarpsInEditMode();
+        
 	protected:
         //! check all warps and returns the index of the closest control point
         //! without actually selecting or delecting any control points
@@ -70,7 +73,10 @@ namespace ofxWarp
         
 		//! check all warps and select the closest control point
 		void selectClosestControlPoint(const glm::vec2 & pos);
-
+        
+        //!Editing
+        bool toggleEditing();
+        bool editingMode = false;
         
 	protected:
 		std::vector<std::shared_ptr<WarpBase>> warps;

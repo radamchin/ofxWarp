@@ -166,6 +166,8 @@ namespace ofxWarp
 		return this->warps.size();
 	}
 
+#pragma mark CONTROL POINTS AND WARPS
+    
     //--------------------------------------------------------------
     size_t Controller::findClosestControlPoint(const glm::vec2 & pos)
     {
@@ -198,7 +200,7 @@ namespace ofxWarp
         {
             float candidate;
             auto idx = this->warps[i]->findClosestControlPoint(pos, &candidate);
-            if (candidate < distance && this->warps[i]->isEditing())
+            if (candidate < distance)
             {
                 distance = candidate;
                 warpIdx = i;
@@ -211,8 +213,6 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::selectClosestControlPoint(const glm::vec2 & pos)
 	{
-
-		focusedIndex = findClosestWarp(pos);
         
 		// Select the closest control point and deselect all others.
 		for (int i = this->warps.size() - 1; i >= 0; --i)
@@ -228,6 +228,30 @@ namespace ofxWarp
 			}
 		}
 	}
+    
+#pragma mark EDITING
+    
+    //--------------------------------------------------------------
+    bool Controller::areWarpsInEditMode()
+    {
+        for(auto &warp : warps)
+        {
+            if(warp->isEditing())
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    //--------------------------------------------------------------
+    bool Controller::toggleEditing()
+    {
+        editingMode = !editingMode;
+    }
+    
+#pragma mark MOUSE INTERACTIONS
 
 	//--------------------------------------------------------------
 	void Controller::onMouseMoved(ofMouseEventArgs & args)
@@ -244,6 +268,21 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::onMousePressed(ofMouseEventArgs & args)
 	{
+        if(ofGetKeyPressed(OF_KEY_LEFT_CONTROL) && editingMode)
+        {
+            //Toggle all warps to false
+            for(auto &warp : warps) warp->setEditing(false);
+            
+            //Find selected warp
+            focusedIndex = findClosestWarp(args);
+            warps[focusedIndex]->toggleEditing();
+            
+            setFocusState(FocusStates::NO_CONTROL_POINT);
+        }
+        
+        //Make sure the warps are in edit mode
+        if(!areWarpsInEditMode()) return;
+        
         switch(focusState)
         {
             case FocusStates::NO_CONTROL_POINT:
@@ -274,6 +313,9 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::onMouseDragged(ofMouseEventArgs & args)
 	{
+        //Make sure the warps are in edit mode
+        if(!areWarpsInEditMode()) return;
+        
         switch(focusState)
         {
             case FocusStates::NO_CONTROL_POINT: { break;}
@@ -295,6 +337,9 @@ namespace ofxWarp
 	void Controller::onMouseReleased(ofMouseEventArgs & args)
 	{
         
+        //Make sure the warps are in edit mode
+        if(!areWarpsInEditMode()) return;
+        
         switch(focusState)
         {
             case FocusStates::NO_CONTROL_POINT: { break;}
@@ -305,11 +350,10 @@ namespace ofxWarp
                     focusedIndexControlPoint == findClosestControlPoint(args)
                     )
                 {
-                    setFocusState(FocusStates::NO_CONTROL_POINT);
                     
                     //Unselect control point
                     warps[focusedIndex]->deselectControlPoint();
-                    
+                    setFocusState(FocusStates::NO_CONTROL_POINT);
                 }
                 break;
             }
@@ -319,15 +363,23 @@ namespace ofxWarp
         
     }
 
+#pragma mark KEY INTERACTIONS
+    
 	//--------------------------------------------------------------
 	void Controller::onKeyPressed(ofKeyEventArgs & args)
 	{
 		if (args.key == 'w')
 		{
+            toggleEditing();
+            
+            /*
+             Removed this to make editing mode a clickable interaction
+             
 			for (auto warp : this->warps)
 			{
 				warp->toggleEditing();
 			}
+             */
 		}
         else if (this->focusedIndex < this->warps.size())
 		{
