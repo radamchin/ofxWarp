@@ -61,12 +61,44 @@ namespace ofxWarp
 		void onWindowResized(ofResizeEventArgs & args);
 
 	protected:
+        //! check all warps and returns the index of the closest control point
+        //! without actually selecting or delecting any control points
+        size_t findClosestControlPoint(const glm::vec2 & pos);
+        
+        //! check all warps and return closest warp index
+        size_t findClosestWarp(const glm::vec2 & pos);
+        
 		//! check all warps and select the closest control point
 		void selectClosestControlPoint(const glm::vec2 & pos);
 
+        
 	protected:
 		std::vector<std::shared_ptr<WarpBase>> warps;
-
 		size_t focusedIndex;
+        size_t focusedIndexControlPoint;
+        
+        //! States to make control points clickable before going into active mode
+        enum FocusStates
+        {
+            NO_CONTROL_POINT,
+            ACTIVE_CONTROL_POINT,
+            NUM_FOCUS_STATES
+        };
+        FocusStates focusState = FocusStates::NO_CONTROL_POINT;
+        
+        //! Changes the focus state of the control point
+        void setFocusState(FocusStates _focusState);
+        
 	};
 }
+
+/*
+
+ switch(focusState)
+ {
+ case FocusStates::NO_CONTROL_POINT: { break;}
+ case FocusStates::ACTIVE_CONTROL_POINT: { break;}
+ default: break;
+ }
+
+*/
