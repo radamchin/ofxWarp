@@ -252,6 +252,12 @@ namespace ofxWarp
     }
     
 #pragma mark MOUSE INTERACTIONS
+    
+    //--------------------------------------------------------------
+    void Controller::setIgnoreMouseInteractions(bool _ignoreMouseInteractions)
+    {
+        ignoreMouseInteractions = _ignoreMouseInteractions;
+    }
 
 	//--------------------------------------------------------------
 	void Controller::onMouseMoved(ofMouseEventArgs & args)
@@ -268,7 +274,12 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::onMousePressed(ofMouseEventArgs & args)
 	{
-        if(ofGetKeyPressed(OF_KEY_LEFT_CONTROL) && editingMode)
+        //Global control of mouse interactions -- this is useful for if you want to have multiple
+        //interctions modes (i.e. GUIs) overlayed ontop of the mouse interaction
+        if(ignoreMouseInteractions) return;
+        
+        
+        if(ofGetKeyPressed(OF_KEY_LEFT_ALT) && editingMode)
         {
             //Toggle all warps to false
             for(auto &warp : warps) warp->setEditing(false);
@@ -313,6 +324,10 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::onMouseDragged(ofMouseEventArgs & args)
 	{
+        //Global control of mouse interactions -- this is useful for if you want to have multiple
+        //interctions modes (i.e. GUIs) overlayed ontop of the mouse interaction
+        if(ignoreMouseInteractions) return;
+        
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
@@ -336,6 +351,10 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::onMouseReleased(ofMouseEventArgs & args)
 	{
+        
+        //Global control of mouse interactions -- this is useful for if you want to have multiple
+        //interctions modes (i.e. GUIs) overlayed ontop of the mouse interaction
+        if(ignoreMouseInteractions) return;
         
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;

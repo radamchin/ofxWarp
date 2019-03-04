@@ -63,6 +63,9 @@ namespace ofxWarp
         //! check to see if warps are in editing mode
         bool areWarpsInEditMode();
         
+        //! set ignoreMouseInteractions for special case scenarios instances
+        void setIgnoreMouseInteractions(bool _ignoreMouseInteractions_ignoreMouseInteractions);
+        
 	protected:
         //! check all warps and returns the index of the closest control point
         //! without actually selecting or delecting any control points
@@ -77,6 +80,7 @@ namespace ofxWarp
         //!Editing
         bool toggleEditing();
         bool editingMode = false;
+        bool ignoreMouseInteractions = false;
         
 	protected:
 		std::vector<std::shared_ptr<WarpBase>> warps;
