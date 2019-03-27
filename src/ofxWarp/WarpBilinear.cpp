@@ -115,11 +115,16 @@ namespace ofxWarp
 	void WarpBilinear::reset(const glm::vec2 & scale, const glm::vec2 & offset)
 	{
 		this->controlPoints.clear();
+        this->selectedIndices.clear();
+        
 		for (auto x = 0; x < this->numControlsX; ++x) 
 		{
 			for (auto y = 0; y < this->numControlsY; ++y) 
 			{
 				this->controlPoints.push_back(glm::vec2(x / float(this->numControlsX - 1), y / float(this->numControlsY - 1)) * scale + offset);
+                
+                size_t temp = -1;
+                this->selectedIndices.push_back(temp);
 			}
 		}
 
@@ -219,12 +224,16 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void WarpBilinear::drawControls()
 	{
-		if (this->editing && this->selectedIndex < this->controlPoints.size())
+		if (this->editing /* && this->selectedIndex < this->controlPoints.size()*/)
 		{
 			// Draw control points.
 			for (auto i = 0; i < this->controlPoints.size(); ++i)
 			{
-				this->queueControlPoint(this->getControlPoint(i) * this->windowSize, i == this->selectedIndex);
+                //BEFORE
+				//this->queueControlPoint(this->getControlPoint(i) * this->windowSize, i == this->selectedIndex);
+                
+                //NEW
+                this->queueControlPoint(this->getControlPoint(i) * this->windowSize, selectedIndices[i] != -1);
 			}
 
 			this->drawControlPoints();
@@ -538,12 +547,16 @@ namespace ofxWarp
 		}
 
 		// Save new control points.
-		this->controlPoints = tempPoints;
+        //BEFORE
+        //this->controlPoints = tempPoints;
+        
+        //NEW
+        assignNewControlPoints(tempPoints);
 		this->numControlsX = n;
 
 		// Find new closest control point.
 		float distance;
-		this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
+		//this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
 
 		this->dirty = true;
 	}
@@ -624,12 +637,18 @@ namespace ofxWarp
 		}
 
 		// Save new control points.
-		this->controlPoints = tempPoints;
+		
+        //BEFORE
+        //this->controlPoints = tempPoints;
+        
+        //NEW
+        assignNewControlPoints(tempPoints);
+        
 		this->numControlsY = n;
 
 		// Find new closest control point.
 		float distance;
-		this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
+		//this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
 
 		this->dirty = true;
 	}
@@ -684,12 +703,18 @@ namespace ofxWarp
 				flippedPoints.push_back(this->controlPoints[i]);
 			}
 		}
-		this->controlPoints = flippedPoints;
+		
+        //BEFORE
+        //this->controlPoints = flippedPoints;
+        
+        //NEW
+        assignNewControlPoints(flippedPoints);
+        
 		this->dirty = true;
 
 		// Find new closest control point.
 		float distance;
-		this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
+		//this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
 	}
 
 	//--------------------------------------------------------------
@@ -704,11 +729,15 @@ namespace ofxWarp
 				flippedPoints.push_back(this->controlPoints[i]);
 			}
 		}
-		this->controlPoints = flippedPoints;
+        //BEFORE
+        //this->controlPoints = flippedPoints;
+        
+        //NEW
+        assignNewControlPoints(flippedPoints);
 		this->dirty = true;
 
 		// Find new closest control point.
 		float distance;
-		this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
+		//this->selectedIndex = this->findClosestControlPoint(glm::vec2(ofGetMouseX(), ofGetMouseY()), &distance);
 	}
 }

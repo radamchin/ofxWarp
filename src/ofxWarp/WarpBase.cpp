@@ -387,6 +387,8 @@ namespace ofxWarp
 		return clipped;
 	}
 
+#pragma mark CONTROL POINTS
+    
 	//--------------------------------------------------------------
 	glm::vec2 WarpBase::getControlPoint(size_t index) const
 	{
@@ -412,6 +414,21 @@ namespace ofxWarp
 		this->controlPoints[index] += shift;
 		this->dirty = true;
 	}
+    
+    //--------------------------------------------------------------
+    void WarpBase::moveControlPoints(const glm::vec2 & shift)
+    {
+        
+        for(int i = 0; i < selectedIndices.size(); i++)
+        {
+            if(selectedIndices[i] == 1)
+            {
+                this->controlPoints[i] += shift;
+                this->dirty = true;
+            }
+        }
+    
+    }
 
 	//--------------------------------------------------------------
 	size_t WarpBase::getNumControlPoints() const
@@ -428,16 +445,35 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void WarpBase::selectControlPoint(size_t index)
 	{
+        //BEFORE
+        /*
 		if (index >= this->controlPoints.size() || index == this->selectedIndex) return;
 
 		this->selectedIndex = index;
 		this->selectedTime = ofGetElapsedTimef();
+         */
+        
+        //NEW
+        if(index >= this->controlPoints.size() || index >= this->selectedIndices.size())
+        {
+            return;
+        }
+        
+        selectedIndices[index] = 1;
+        this->selectedTime = ofGetElapsedTimef();
 	}
 
 	//--------------------------------------------------------------
 	void WarpBase::deselectControlPoint()
 	{
-		this->selectedIndex = -1;
+        //BEFORE
+		//this->selectedIndex = -1;
+        
+        //NEW
+        for(auto index : selectedIndices)
+        {
+            index = -1;
+        }
 	}
 
 	//--------------------------------------------------------------
@@ -567,6 +603,25 @@ namespace ofxWarp
 
 		this->controlData.clear();
 	}
+    
+    //--------------------------------------------------------------
+    void WarpBase::assignNewControlPoints(std::vector<glm::vec2> _controlPoints)
+    {
+        controlPoints = _controlPoints;
+        
+        //Clear all selected indices
+        selectedIndices.erase (selectedIndices.begin(), selectedIndices.end());
+        
+        
+        //Add new indices
+        for(int i = 0; i < controlPoints.size(); i++)
+        {
+            size_t temp;
+            temp = -1;
+            selectedIndices.push_back(temp);
+        }
+        
+    }
 	
 	//--------------------------------------------------------------
 	bool WarpBase::handleCursorDown(const glm::vec2 & pos)

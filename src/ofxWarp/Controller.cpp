@@ -219,13 +219,22 @@ namespace ofxWarp
 		{
 			if (i == this->focusedIndex)
 			{
-                focusedIndexControlPoint = findClosestControlPoint(pos);
-				this->warps[i]->selectControlPoint(focusedIndexControlPoint);
+                //BEFORE:
+                //focusedIndexControlPoint = findClosestControlPoint(pos);
+				//this->warps[i]->selectControlPoint(focusedIndexControlPoint);
+                
+                size_t temp =  findClosestControlPoint(pos);
+                //focusedIndexControlPoints.push_back(temp);
+                
+                this->warps[i]->selectControlPoint(temp);
 			}
+            
+            /*
 			else
 			{
 				this->warps[i]->deselectControlPoint();
 			}
+            */
 		}
 	}
     
@@ -294,6 +303,7 @@ namespace ofxWarp
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
+        
         switch(focusState)
         {
             case FocusStates::NO_CONTROL_POINT:
@@ -312,6 +322,7 @@ namespace ofxWarp
             }
             case FocusStates::ACTIVE_CONTROL_POINT:
             {
+                this->selectClosestControlPoint(args);
                 this->warps[this->focusedIndex]->handleCursorDown(args);
                 break;
             }
@@ -359,6 +370,8 @@ namespace ofxWarp
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
+        //BEFORE
+        /*
         switch(focusState)
         {
             case FocusStates::NO_CONTROL_POINT: { break;}
@@ -378,7 +391,7 @@ namespace ofxWarp
             }
             default: break;
         }
-        
+        */
         
     }
 
@@ -460,7 +473,12 @@ namespace ofxWarp
 				{
 					shift.x = step / (float)ofGetWidth();
 				}
-				warp->moveControlPoint(warp->getSelectedControlPoint(), shift);
+				
+                //BEFORE
+                //warp->moveControlPoint(warp->getSelectedControlPoint(), shift);
+                warp->moveControlPoints(shift);
+
+                
 			}
 			else if (args.key == OF_KEY_F9)
 			{
@@ -552,7 +570,7 @@ namespace ofxWarp
 			}
 		}
         
-
+        
        
 	}
 
