@@ -112,6 +112,11 @@ namespace ofxWarp
 		virtual void setControlPoint(size_t index, const glm::vec2 & pos);
 		//! move the specified control point
 		virtual void moveControlPoint(size_t index, const glm::vec2 & shift);
+        
+        //! move the control points
+        virtual void moveControlPoints(const glm::vec2 & shift);
+        
+    
 		//! get the number of control points
 		virtual size_t getNumControlPoints() const;
 		//! get the index of the currently selected control point
@@ -156,7 +161,13 @@ namespace ofxWarp
 		void setupControlPoints();
 		//! draw the control points
 		void drawControlPoints();
-
+        
+        //NEW
+        //!Assign new control points
+        void assignNewControlPoints(std::vector<glm::vec2> _controlPoints);
+        
+        std::vector<size_t> selectedIndices;
+        
 	protected:
 		Type type;
 

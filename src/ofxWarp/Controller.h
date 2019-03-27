@@ -84,9 +84,11 @@ namespace ofxWarp
         
 	protected:
 		std::vector<std::shared_ptr<WarpBase>> warps;
-		size_t focusedIndex;
-        size_t focusedIndexControlPoint;
+		size_t focusedIndex; //focused index of focused warp
         
+        //[[deprecated]]
+        //size_t focusedIndexControlPoint;
+
         //! States to make control points clickable before going into active mode
         enum FocusStates
         {
