@@ -124,7 +124,9 @@ namespace ofxWarp
 		//! select one of the control points
 		virtual void selectControlPoint(size_t index);
 		//! deselect the selected control point
-		virtual void deselectControlPoint();
+		virtual void deselectControlPoints();
+        //! deselect the selected control point
+        virtual void deselectControlPoints(size_t index);
 		//! return the index of the closest control point, as well as the distance in pixels
 		virtual size_t findClosestControlPoint(const glm::vec2 & pos, float * distance) const;
 

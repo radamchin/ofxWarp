@@ -464,7 +464,7 @@ namespace ofxWarp
 	}
 
 	//--------------------------------------------------------------
-	void WarpBase::deselectControlPoint()
+	void WarpBase::deselectControlPoints()
 	{
         //BEFORE
 		//this->selectedIndex = -1;
@@ -475,6 +475,14 @@ namespace ofxWarp
             index = -1;
         }
 	}
+    
+    void WarpBase::deselectControlPoints(size_t index)
+    {
+        if(index >= selectedIndices.size())
+            return;
+        
+        selectedIndices[index] = -1;
+    }
 
 	//--------------------------------------------------------------
 	size_t WarpBase::findClosestControlPoint(const glm::vec2 & pos, float * distance) const
