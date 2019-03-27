@@ -31,7 +31,8 @@ namespace ofxWarp
 		//! select one of the control points
 		virtual void selectControlPoint(size_t index) override;
 		//! deselect the selected control point
-		virtual void deselectControlPoint() override;
+		//NEED TO DO: Update this for new deselction process
+        //virtual void deselectControlPoint() override;
 
 		virtual void rotateClockwise() override;
 		virtual void rotateCounterclockwise() override;
