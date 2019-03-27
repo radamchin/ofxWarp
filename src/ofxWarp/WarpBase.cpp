@@ -476,7 +476,7 @@ namespace ofxWarp
         }
 	}
     
-    void WarpBase::deselectControlPoints(size_t index)
+    void WarpBase::deselectControlPoint(size_t index)
     {
         if(index >= selectedIndices.size())
             return;

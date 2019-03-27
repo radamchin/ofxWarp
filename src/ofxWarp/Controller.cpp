@@ -393,6 +393,18 @@ namespace ofxWarp
         }
         */
         
+        //NEW
+        
+        if (ofGetKeyPressed(OF_KEY_SHIFT))
+        {
+            
+            //Unselect control point
+            size_t temp = findClosestControlPoint(args);
+            warps[focusedIndex]->deselectControlPoint(temp);
+
+        }
+
+        
     }
 
 #pragma mark KEY INTERACTIONS

@@ -146,20 +146,24 @@ namespace ofxWarp
 		}
 		else 
 		{
-			this->warpPerspective->deselectControlPoint();
+            //NEED TO DO: Update this for new selection process
+			//this->warpPerspective->deselectControlPoint(index);
 		}
 
 		// Always select bilinear control point, which we use to keep track of editing.
 		WarpBase::selectControlPoint(index);
 	}
 
+    /*
 	//--------------------------------------------------------------
 	void WarpPerspectiveBilinear::deselectControlPoint()
 	{
-		this->warpPerspective->deselectControlPoint();
-		WarpBase::deselectControlPoint();
+        //NEED TO DO: Update this for new selection process
+		//this->warpPerspective->deselectControlPoint();
+		//WarpBase::deselectControlPoint();
 	}
-
+     */
+    
 	//--------------------------------------------------------------
 	void WarpPerspectiveBilinear::rotateClockwise()
 	{
