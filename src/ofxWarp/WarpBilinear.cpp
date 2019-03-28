@@ -233,10 +233,7 @@ namespace ofxWarp
 			// Draw control points.
 			for (auto i = 0; i < this->controlPoints.size(); ++i)
 			{
-                //BEFORE
-				//this->queueControlPoint(this->getControlPoint(i) * this->windowSize, i == this->selectedIndex);
-                
-                //NEW
+
                 this->queueControlPoint(this->getControlPoint(i) * this->windowSize, selectedIndices[i] != -1);
 			}
 
@@ -551,10 +548,6 @@ namespace ofxWarp
 		}
 
 		// Save new control points.
-        //BEFORE
-        //this->controlPoints = tempPoints;
-        
-        //NEW
         assignNewControlPoints(tempPoints);
 		this->numControlsX = n;
 
@@ -642,10 +635,6 @@ namespace ofxWarp
 
 		// Save new control points.
 		
-        //BEFORE
-        //this->controlPoints = tempPoints;
-        
-        //NEW
         assignNewControlPoints(tempPoints);
         
 		this->numControlsY = n;
@@ -707,11 +696,7 @@ namespace ofxWarp
 				flippedPoints.push_back(this->controlPoints[i]);
 			}
 		}
-		
-        //BEFORE
-        //this->controlPoints = flippedPoints;
-        
-        //NEW
+
         assignNewControlPoints(flippedPoints);
         
 		this->dirty = true;
@@ -733,10 +718,7 @@ namespace ofxWarp
 				flippedPoints.push_back(this->controlPoints[i]);
 			}
 		}
-        //BEFORE
-        //this->controlPoints = flippedPoints;
-        
-        //NEW
+
         assignNewControlPoints(flippedPoints);
 		this->dirty = true;
 

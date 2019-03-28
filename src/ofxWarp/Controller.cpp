@@ -219,13 +219,8 @@ namespace ofxWarp
 		{
 			if (i == this->focusedIndex)
 			{
-                //BEFORE:
-                //focusedIndexControlPoint = findClosestControlPoint(pos);
-				//this->warps[i]->selectControlPoint(focusedIndexControlPoint);
-                
+
                 size_t temp =  findClosestControlPoint(pos);
-                //focusedIndexControlPoints.push_back(temp);
-                
                 this->warps[i]->selectControlPoint(temp);
 			}
 		}
@@ -430,10 +425,7 @@ namespace ofxWarp
 					shift.x = step / (float)ofGetWidth();
 				}
 				
-                //BEFORE
-                //warp->moveControlPoint(warp->getSelectedControlPoint(), shift);
                 warp->moveControlPoints(shift);
-
                 
 			}
 			else if (args.key == OF_KEY_F9)

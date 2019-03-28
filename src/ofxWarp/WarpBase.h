@@ -163,8 +163,7 @@ namespace ofxWarp
 		void setupControlPoints();
 		//! draw the control points
 		void drawControlPoints();
-        
-        //NEW
+    
         //!Assign new control points
         void assignNewControlPoints(std::vector<glm::vec2> _controlPoints);
         
