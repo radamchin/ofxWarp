@@ -228,13 +228,6 @@ namespace ofxWarp
                 
                 this->warps[i]->selectControlPoint(temp);
 			}
-            
-            /*
-			else
-			{
-				this->warps[i]->deselectControlPoint();
-			}
-            */
 		}
 	}
     
@@ -258,6 +251,16 @@ namespace ofxWarp
     bool Controller::toggleEditing()
     {
         editingMode = !editingMode;
+        
+        if(!editingMode)
+        {
+            //Set all warps to false
+            for(auto &warp : warps)
+            {
+                if(warp->isEditing())
+                    warp->toggleEditing();
+            }
+        }
     }
     
 #pragma mark MOUSE INTERACTIONS
@@ -296,38 +299,14 @@ namespace ofxWarp
             //Find selected warp
             focusedIndex = findClosestWarp(args);
             warps[focusedIndex]->toggleEditing();
-            
-            setFocusState(FocusStates::NO_CONTROL_POINT);
+    
         }
         
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
-        
-        switch(focusState)
-        {
-            case FocusStates::NO_CONTROL_POINT:
-            {
-                
-                // Find and select closest control point.
-                this->selectClosestControlPoint(args);
-                
-                if (this->focusedIndex < this->warps.size())
-                {
-                    this->warps[this->focusedIndex]->handleCursorDown(args);
-                }
-                
-                setFocusState(FocusStates::ACTIVE_CONTROL_POINT);
-                break;
-            }
-            case FocusStates::ACTIVE_CONTROL_POINT:
-            {
-                this->selectClosestControlPoint(args);
-                this->warps[this->focusedIndex]->handleCursorDown(args);
-                break;
-            }
-            default: break;
-        }
+        this->selectClosestControlPoint(args);
+        this->warps[this->focusedIndex]->handleCursorDown(args);
         
        
 	}
@@ -342,19 +321,9 @@ namespace ofxWarp
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
-        switch(focusState)
+        if (this->focusedIndex < this->warps.size())
         {
-            case FocusStates::NO_CONTROL_POINT: { break;}
-            case FocusStates::ACTIVE_CONTROL_POINT:
-            {
-                
-                if (this->focusedIndex < this->warps.size())
-                {
-                    this->warps[this->focusedIndex]->handleCursorDrag(args);
-                }
-                break;
-            }
-            default: break;
+            this->warps[this->focusedIndex]->handleCursorDrag(args);
         }
     
 	}
@@ -369,32 +338,7 @@ namespace ofxWarp
         
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
-        
-        //BEFORE
-        /*
-        switch(focusState)
-        {
-            case FocusStates::NO_CONTROL_POINT: { break;}
-            case FocusStates::ACTIVE_CONTROL_POINT:
-            {
-                
-                if (ofGetKeyPressed(OF_KEY_SHIFT) &&
-                    focusedIndexControlPoint == findClosestControlPoint(args)
-                    )
-                {
-                    
-                    //Unselect control point
-                    warps[focusedIndex]->deselectControlPoint();
-                    setFocusState(FocusStates::NO_CONTROL_POINT);
-                }
-                break;
-            }
-            default: break;
-        }
-        */
-        
-        //NEW
-        
+
         if (ofGetKeyPressed(OF_KEY_SHIFT))
         {
             
@@ -601,18 +545,4 @@ namespace ofxWarp
 		}
 	}
     
-    
-#pragma mark mark FOCUS STATES
-    //--------------------------------------------------------------
-    void Controller::setFocusState(FocusStates _focusState)
-    {
-        focusState = _focusState;
-        
-        switch(focusState)
-        {
-            case FocusStates::NO_CONTROL_POINT: { break;}
-            case FocusStates::ACTIVE_CONTROL_POINT: { break;}
-            default: break;
-        }
-    }
 }

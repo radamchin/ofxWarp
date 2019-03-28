@@ -88,29 +88,7 @@ namespace ofxWarp
         
         //[[deprecated]]
         //size_t focusedIndexControlPoint;
-
-        //! States to make control points clickable before going into active mode
-        enum FocusStates
-        {
-            NO_CONTROL_POINT,
-            ACTIVE_CONTROL_POINT,
-            NUM_FOCUS_STATES
-        };
-        FocusStates focusState = FocusStates::NO_CONTROL_POINT;
-        
-        //! Changes the focus state of the control point
-        void setFocusState(FocusStates _focusState);
         
 	};
 }
 
-/*
-
- switch(focusState)
- {
- case FocusStates::NO_CONTROL_POINT: { break;}
- case FocusStates::ACTIVE_CONTROL_POINT: { break;}
- default: break;
- }
-
-*/

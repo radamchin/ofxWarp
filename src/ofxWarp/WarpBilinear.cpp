@@ -116,6 +116,7 @@ namespace ofxWarp
 	{
 		this->controlPoints.clear();
         this->selectedIndices.clear();
+        this->selectedOffsets.clear();
         
 		for (auto x = 0; x < this->numControlsX; ++x) 
 		{
@@ -125,6 +126,9 @@ namespace ofxWarp
                 
                 size_t temp = -1;
                 this->selectedIndices.push_back(temp);
+                
+                glm::vec2 tempOffset;
+                this->selectedOffsets.push_back(tempOffset);
 			}
 		}
 
