@@ -243,7 +243,7 @@ namespace ofxWarp
     }
     
     //--------------------------------------------------------------
-    bool Controller::toggleEditing()
+    void Controller::toggleEditing()
     {
         editingMode = !editingMode;
         
