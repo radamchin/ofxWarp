@@ -445,15 +445,7 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void WarpBase::selectControlPoint(size_t index)
 	{
-        //BEFORE
-        /*
-		if (index >= this->controlPoints.size() || index == this->selectedIndex) return;
 
-		this->selectedIndex = index;
-		this->selectedTime = ofGetElapsedTimef();
-         */
-        
-        //NEW
         if(index >= this->controlPoints.size() || index >= this->selectedIndices.size())
         {
             return;
@@ -466,10 +458,7 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void WarpBase::deselectControlPoints()
 	{
-        //BEFORE
-		//this->selectedIndex = -1;
-        
-        //NEW
+
         for(auto index : selectedIndices)
         {
             index = -1;
