@@ -627,6 +627,9 @@ namespace ofxWarp
             size_t temp;
             temp = -1;
             selectedIndices.push_back(temp);
+            
+            glm::vec2 tempOffSet;
+            selectedOffsets.push_back(tempOffSet);
         }
         
     }
@@ -634,27 +637,40 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	bool WarpBase::handleCursorDown(const glm::vec2 & pos)
 	{
-		if (!this->editing || this->selectedIndex >= this->controlPoints.size()) return false;
-
-		// Calculate offset by converting control point from normalized to screen space.
-		glm::vec2 screenPoint = (this->getControlPoint(this->selectedIndex) * this->windowSize);
-		this->selectedOffset = pos - screenPoint;
-
-		return true;
+        
+        if (!this->editing) return false;
+        
+        for(int i = 0 ; i < selectedIndices.size() ; i++)
+        {
+            if(selectedIndices[i] == 1)
+            {
+                // Calculate offset by converting control point from normalized to screen space.
+                glm::vec2 screenPoint = (this->getControlPoint(i) * this->windowSize);
+                selectedOffsets[i] = pos - screenPoint;
+            }
+        }
+        
+        return true;
 	}
 	
 	//--------------------------------------------------------------
 	bool WarpBase::handleCursorDrag(const glm::vec2 & pos)
 	{
-		if (!this->editing || this->selectedIndex >= this->controlPoints.size()) return false;
-
-		// Set control point in normalized space.
-		glm::vec2 screenPoint = pos - this->selectedOffset;
-		this->setControlPoint(this->selectedIndex, screenPoint / this->windowSize);
-
-		this->dirty = true;
-
-		return true;
+        
+        if (!this->editing) return false;
+        
+        for(int i = 0 ; i < selectedIndices.size() ; i++)
+        {
+            if(selectedIndices[i] == 1)
+            {
+                // Set control point in normalized space.
+                glm::vec2 screenPoint = pos - selectedOffsets[i];
+                this->setControlPoint(i, screenPoint / this->windowSize);
+            }
+        }
+        
+        this->dirty = true;
+        return true;
 	}
 
 	//--------------------------------------------------------------

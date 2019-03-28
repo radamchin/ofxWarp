@@ -191,6 +191,7 @@ namespace ofxWarp
 		float selectedTime;
 		glm::vec2 selectedOffset;
 
+        std::vector<glm::vec2> selectedOffsets;
 		glm::vec3 luminance;
 		glm::vec3 gamma;
 		float exponent;
