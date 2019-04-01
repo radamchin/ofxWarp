@@ -155,6 +155,14 @@ namespace ofxWarp
 	bool WarpBase::isEditing() const
 	{
 		return this->editing;
+        
+        //Turn off all control points
+        
+        for(auto &index : selectedIndices)
+        {
+            index = -1;
+        }
+
 	}
 
 	//--------------------------------------------------------------
