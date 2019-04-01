@@ -149,19 +149,20 @@ namespace ofxWarp
 	void WarpBase::toggleEditing()
 	{
 		this->setEditing(!this->editing);
+        
+        //Turn off all control points
+        for(int i = 0; i < selectedIndices.size(); i++)
+        {
+            
+            selectedIndices[i] = -1;
+        }
+        
 	}
 	
 	//--------------------------------------------------------------
 	bool WarpBase::isEditing() const
 	{
-		return this->editing;
-        
-        //Turn off all control points
-        
-        for(auto &index : selectedIndices)
-        {
-            index = -1;
-        }
+        return this->editing;
 
 	}
 
