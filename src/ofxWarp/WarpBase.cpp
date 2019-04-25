@@ -113,6 +113,8 @@ namespace ofxWarp
 			}
 		}
 
+		assignNewControlPoints(this->controlPoints); 
+
 		// Blend parameters.
 		{
 			const auto & jsonBlend = json["blend"];
@@ -401,7 +403,12 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	glm::vec2 WarpBase::getControlPoint(size_t index) const
 	{
-		if (index >= this->controlPoints.size()) return glm::vec2(0.0f);
+		if (index >= this->controlPoints.size()) 
+		{
+			ofLogError() << "index is out of bounds of controlPoints.size(): " << controlPoints.size(); 
+
+			return glm::vec2(0.0f, 0.0f);
+		}
 
 		return this->controlPoints[index];
 	}
