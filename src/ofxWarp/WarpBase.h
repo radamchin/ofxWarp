@@ -161,6 +161,7 @@ namespace ofxWarp
 
 		//! setup the control points instanced vbo
 		void setupControlPoints();
+
 		//! draw the control points
 		void drawControlPoints();
     
