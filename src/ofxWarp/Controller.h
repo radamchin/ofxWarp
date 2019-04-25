@@ -78,7 +78,7 @@ namespace ofxWarp
 		void selectClosestControlPoint(const glm::vec2 & pos);
         
         //!Editing
-        bool toggleEditing();
+        void toggleEditing();
         bool editingMode = false;
         bool ignoreMouseInteractions = false;
         
