@@ -56,7 +56,10 @@ namespace ofxWarp
 
 			jsonWarp["columns"] = this->numControlsX;
 			jsonWarp["rows"] = this->numControlsY;
-
+            
+            jsonWarp["width"] = this->width;
+            jsonWarp["height"] = this->height;
+            
 			std::vector<std::string> points;
 			for (auto & controlPoint : this->controlPoints)
 			{
@@ -111,6 +114,9 @@ namespace ofxWarp
 				iss >> controlPoint;
 				this->controlPoints.push_back(controlPoint);
 			}
+            
+            this->width =  jsonWarp["width"] ;
+            this->height = jsonWarp["height"];
 		}
 
 		// Blend parameters.
