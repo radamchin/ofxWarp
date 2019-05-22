@@ -33,6 +33,10 @@ namespace ofxWarp
 		//! deselect the selected control point
 		//NEED TO DO: Update this for new deselction process
         //virtual void deselectControlPoint() override;
+        
+        // MULTIPLE CONTROL POINTS
+        //! move the control points
+        virtual void moveControlPoints(const glm::vec2 & shift);
 
 		virtual void rotateClockwise() override;
 		virtual void rotateCounterclockwise() override;
