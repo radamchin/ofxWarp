@@ -109,6 +109,7 @@ namespace ofxWarp
 		}
 		else 
 		{
+            
 			// Bilinear:: transform control point from normalized screen space to warped space.
 			auto cp = pos * this->windowSize;
 			auto pt = this->warpPerspective->getTransformInverted() * glm::vec4(cp.x, cp.y, 0.0f, 1.0f);
@@ -117,6 +118,7 @@ namespace ofxWarp
 			pt *= pt.w;
 
 			WarpBase::setControlPoint(index, glm::vec2(pt.x, pt.y) / this->warpPerspective->getSize());
+            
 		}
 	}
 
@@ -135,7 +137,41 @@ namespace ofxWarp
 			this->setControlPoint(index, pt + shift);
 		}
 	}
-
+    
+    //--------------------------------------------------------------
+    void WarpPerspectiveBilinear::moveControlPoints(const glm::vec2 & shift)
+    {
+        
+        
+         //NEW: to make new function and keep this function as is for older code
+         for(int i = 0; i < selectedIndices.size(); i++)
+         {
+            if(selectedIndices[i] == 1)
+             {
+                 
+                 if(isCorner(i))
+                 {
+                     warpPerspective->moveControlPoint(convertIndex(i), shift);
+                 }
+                 else
+                 {
+                     const glm::vec2 & pos = getControlPoint(i) + shift;
+                     
+                     auto cp = pos * this->windowSize;
+                     auto pt = this->warpPerspective->getTransformInverted() * glm::vec4(cp.x, cp.y, 0.0f, 1.0f);
+                     
+                     if (pt.w != 0) pt.w = 1.0f / pt.w;
+                     pt *= pt.w;
+                     
+                     WarpBase::setControlPoint(i, glm::vec2(pt.x, pt.y) / this->warpPerspective->getSize());
+                 }
+                
+             }
+         }
+         
+        
+    }
+    
 	//--------------------------------------------------------------
 	void WarpPerspectiveBilinear::selectControlPoint(size_t index)
 	{
@@ -179,26 +215,33 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	bool WarpPerspectiveBilinear::handleCursorDown(const glm::vec2 & pos)
 	{
-		if (!this->editing || this->selectedIndex >= this->controlPoints.size()) return false;
+        if (!this->editing)  return false;
+        //OLD
+		//if (!this->editing || this->selectedIndex >= this->controlPoints.size()) return false;
 
 		// Depending on selected control point, let perspective or bilinear warp handle it.
-		if (this->isCorner(this->selectedIndex)) 
-		{
-			return this->warpPerspective->handleCursorDown(pos);
-		}
+//		if (this->isCorner(this->selectedIndex)) 
+//		{
+//			return this->warpPerspective->handleCursorDown(pos);
+//		}
+        
 		return WarpBase::handleCursorDown(pos);
 	}
 			
 	//--------------------------------------------------------------
 	bool WarpPerspectiveBilinear::handleCursorDrag(const glm::vec2 & pos)
 	{
-		if (!this->editing || this->selectedIndex >= this->controlPoints.size()) return false;
+        if (!this->editing) return false;
+        
+        //OLD
+		//if (!this->editing || this->selectedIndex >= this->controlPoints.size()) return false;
 
 		// Depending on selected control point, let perspective or bilinear warp handle it.
-		if (this->isCorner(this->selectedIndex))
-		{
-			return this->warpPerspective->handleCursorDrag(pos);
-		}
+//		if (this->isCorner(this->selectedIndex))
+//		{
+//			return this->warpPerspective->handleCursorDrag(pos);
+//		}
+        
 		return WarpBase::handleCursorDrag(pos);
 	}
 
