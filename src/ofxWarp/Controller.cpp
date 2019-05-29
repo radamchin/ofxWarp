@@ -340,10 +340,10 @@ namespace ofxWarp
             //Unselect control point
             size_t temp = findClosestControlPoint(args);
             warps[focusedIndex]->deselectControlPoint(temp);
-
+			return; 
         }
 
-        
+
     }
 
 #pragma mark KEY INTERACTIONS
