@@ -481,7 +481,7 @@ namespace ofxWarp
 	void WarpBase::deselectControlPoints()
 	{
 
-        for(auto index : selectedIndices)
+        for(auto &index : selectedIndices)
         {
             index = -1;
         }
