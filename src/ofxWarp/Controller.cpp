@@ -241,6 +241,19 @@ namespace ofxWarp
         
         return false;
     }
+
+	//--------------------------------------------------------------
+	void Controller::turnEditingOff()
+	{
+		editingMode = false; 
+
+		//Set all warps to false
+		for (auto &warp : warps)
+		{
+			if (warp->isEditing())
+				warp->toggleEditing();
+		}
+	}
     
     //--------------------------------------------------------------
     void Controller::toggleEditing()

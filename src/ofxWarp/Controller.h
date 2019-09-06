@@ -62,7 +62,8 @@ namespace ofxWarp
 
         //! check to see if warps are in editing mode
         bool areWarpsInEditMode();
-        
+		void turnEditingOff(); 
+
         //! set ignoreMouseInteractions for special case scenarios instances
         void setIgnoreMouseInteractions(bool _ignoreMouseInteractions_ignoreMouseInteractions);
         
