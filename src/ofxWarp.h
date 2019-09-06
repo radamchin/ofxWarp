@@ -6,6 +6,7 @@
 #include "ofxWarp/WarpPerspective.h"
 #include "ofxWarp/WarpPerspectiveBilinear.h"
 
+//class organization
 typedef ofxWarp::Controller ofxWarpController;
 typedef ofxWarp::WarpBase ofxWarpBase;
 typedef ofxWarp::WarpBilinear ofxWarpBilinear;
