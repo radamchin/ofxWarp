@@ -104,8 +104,12 @@ namespace ofxWarp
 
 			this->numControlsX = jsonWarp["columns"];
 			this->numControlsY = jsonWarp["rows"];
-
+            
 			this->controlPoints.clear();
+            
+            this->width =  jsonWarp["width"] ;
+            this->height = jsonWarp["height"];
+        
 			for (const auto & jsonPoint : jsonWarp["control points"])
 			{
 				glm::vec2 controlPoint;
@@ -115,12 +119,18 @@ namespace ofxWarp
 				this->controlPoints.push_back(controlPoint);
 			}
             
-            this->width =  jsonWarp["width"] ;
-            this->height = jsonWarp["height"];
 		}
 
 		assignNewControlPoints(this->controlPoints); 
-
+        
+        /*
+         THIS IS A QUICK PATCH AND NOT A REAL SOLUTION TO THE ACTUAL PROBLEM:
+        For some reason, when the settings are reloaded, the warps are not drawn at the correct scale. Toggling fullscreen fixes this for some reason.
+         */
+         
+        ofToggleFullscreen();
+        ofToggleFullscreen();
+        
 		// Blend parameters.
 		{
 			const auto & jsonBlend = json["blend"];
