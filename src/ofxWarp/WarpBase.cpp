@@ -129,7 +129,7 @@ namespace ofxWarp
          */
          
         ofToggleFullscreen();
-        ofToggleFullscreen();
+       // ofToggleFullscreen();
         
 		// Blend parameters.
 		{
