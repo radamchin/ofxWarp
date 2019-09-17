@@ -39,6 +39,8 @@ namespace ofxWarp
 	{
 		WarpBilinear::deserialize(json);
 
+		handleWindowResize(ofGetWidth(), ofGetHeight()); 
+
 		auto i = 0;
 		for (const auto & jsonPoint : json["corners"])
 		{

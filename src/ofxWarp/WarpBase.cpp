@@ -123,6 +123,7 @@ namespace ofxWarp
 
 		assignNewControlPoints(this->controlPoints); 
        
+		
         
 		// Blend parameters.
 		{
@@ -148,6 +149,7 @@ namespace ofxWarp
 		}
 
 		this->dirty = true;
+
 	}
 
 	//--------------------------------------------------------------
