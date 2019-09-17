@@ -122,14 +122,7 @@ namespace ofxWarp
 		}
 
 		assignNewControlPoints(this->controlPoints); 
-        
-        /*
-         THIS IS A QUICK PATCH AND NOT A REAL SOLUTION TO THE ACTUAL PROBLEM:
-        For some reason, when the settings are reloaded, the warps are not drawn at the correct scale. Toggling fullscreen fixes this for some reason.
-         */
-         
-        ofToggleFullscreen();
-       // ofToggleFullscreen();
+       
         
 		// Blend parameters.
 		{
