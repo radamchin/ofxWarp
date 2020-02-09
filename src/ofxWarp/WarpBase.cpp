@@ -171,7 +171,20 @@ namespace ofxWarp
         }
         
 	}
-	
+
+	glm::vec2 WarpBase::getCenter(){
+		if(controlPoints.size()){
+			double avgx, avgy;
+			for(int i = 0; i < controlPoints.size(); i++){
+				auto pt = this->getControlPoint(i);
+				avgx += pt.x * windowSize.x / controlPoints.size();
+				avgy += pt.y * windowSize.y / controlPoints.size();
+			}
+			return glm::vec2(avgx, avgy);
+		}else{
+			return glm::vec2();
+		}
+	}
 	//--------------------------------------------------------------
 	bool WarpBase::isEditing() const
 	{

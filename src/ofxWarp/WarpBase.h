@@ -116,7 +116,8 @@ namespace ofxWarp
         //! move the control points
         virtual void moveControlPoints(const glm::vec2 & shift);
         
-    
+		glm::vec2 getCenter(); //the avg of all ctrl points
+
 		//! get the number of control points
 		virtual size_t getNumControlPoints() const;
 		//! get the index of the currently selected control point
@@ -148,6 +149,8 @@ namespace ofxWarp
 		virtual bool handleWindowResize(int width, int height);
 
 		static void setShaderPath(const std::filesystem::path shaderPath);
+
+
 
 	protected:
 		//! draw a specific area of a warped texture to a specific region

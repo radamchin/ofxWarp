@@ -37,7 +37,7 @@ namespace ofxWarp
         
         // MULTIPLE CONTROL POINTS
         //! move the control points
-        virtual void moveControlPoints(const glm::vec2 & shift);
+        virtual void moveControlPoints(const glm::vec2 & shift) override;
 
 		virtual void rotateClockwise() override;
 		virtual void rotateCounterclockwise() override;

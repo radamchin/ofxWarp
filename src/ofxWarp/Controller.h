@@ -62,7 +62,8 @@ namespace ofxWarp
 
         //! check to see if warps are in editing mode
         bool areWarpsInEditMode();
-		void turnEditingOff(); 
+		void turnEditingOff();
+		void turnEditingOn();
 
         //! set ignoreMouseInteractions for special case scenarios instances
         void setIgnoreMouseInteractions(bool _ignoreMouseInteractions_ignoreMouseInteractions);
@@ -70,18 +71,27 @@ namespace ofxWarp
 	protected:
         //! check all warps and returns the index of the closest control point
         //! without actually selecting or delecting any control points
-        size_t findClosestControlPoint(const glm::vec2 & pos);
+		//if no control point is closeby (d < maxDist) dont do anything return -1
+        int findClosestControlPoint(const glm::vec2 & pos, float maxDist);
         
         //! check all warps and return closest warp index
         size_t findClosestWarp(const glm::vec2 & pos);
         
 		//! check all warps and select the closest control point
-		void selectClosestControlPoint(const glm::vec2 & pos, bool extendSelectino);
+		//return true of one got selected (if user clicked close enough to point)
+		bool selectClosestControlPoint(const glm::vec2 & pos, bool extendSelectino, float minDist);
         
         //!Editing
         void toggleEditing();
         bool editingMode = false;
         bool ignoreMouseInteractions = false;
+
+		bool mouseDown = false;
+		ofVec2f mouseDownPos;
+		float mouseDownTimestamp = 0;
+
+		bool didClickOnCtrlPoint = false;
+
         
 	protected:
 		std::vector<std::shared_ptr<WarpBase>> warps;

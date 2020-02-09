@@ -169,9 +169,9 @@ namespace ofxWarp
 #pragma mark CONTROL POINTS AND WARPS
     
     //--------------------------------------------------------------
-    size_t Controller::findClosestControlPoint(const glm::vec2 & pos)
+    int Controller::findClosestControlPoint(const glm::vec2 & pos, float maxDist)
     {
-        size_t pointIdx = -1;
+        int pointIdx = -1;
         auto distance = std::numeric_limits<float>::max();
         
         // Find warp and distance to closest control point.
@@ -185,56 +185,91 @@ namespace ofxWarp
                 pointIdx = idx;
             }
         }
-        
-        return pointIdx;
+		if(distance < maxDist){
+        	return pointIdx;
+		}else{
+			return -1;
+		}
     }
     
     //--------------------------------------------------------------
     size_t Controller::findClosestWarp(const glm::vec2 & pos)
     {
         size_t warpIdx = -1;
-        auto distance = std::numeric_limits<float>::max();
-        
+        auto minDistance = std::numeric_limits<float>::max();
+
+		std::map<int, float> distances;
+
         // Find warp and distance to closest control point.
         for (int i = this->warps.size() - 1; i >= 0; --i)
         {
             float candidateDist = 0;
             auto idx = this->warps[i]->findClosestControlPoint(pos, &candidateDist);
-			ofLogNotice("Controller::findClosestWarp") << "candidate for warp " << i << " : dist: " << candidateDist << " pt: " << idx;
-            if (candidateDist < distance)
+			distances[i] = candidateDist;
+            if (candidateDist <= minDistance)
             {
-                distance = candidateDist;
+                minDistance = candidateDist;
                 warpIdx = i;
             }
         }
 
-		ofLogNotice("Controller::findClosestWarp") << "final candidate for warp " << warpIdx;
+		//see if we have conflict points, where they both would be selected
+		std::vector<int> candidateWarps;
+		for(auto & it : distances){
+			if(fabs(it.second - minDistance) < 1){
+				candidateWarps.push_back(it.first);
+			}
+		}
+
+		if(candidateWarps.size() > 1){ //we need to be which warps is closest to the mouse click
+			float minDist = FLT_MAX;
+			int warp = -1;
+			for(int index : candidateWarps){
+				auto ctr = warps[index]->getCenter();
+				float d = ofDist(ctr.x, ctr.y, pos.x, pos.y);
+				//ofLogNotice() << "warp: " << index << " ctr: " << ctr << " d: " << d;
+				if(d < minDist){
+					warp = index;
+					minDist = d;
+				}
+			}
+			if(warp >= 0) warpIdx = warp;
+		}
+
+		//ofLogNotice("Controller::findClosestWarp") << "final candidate for warp " << warpIdx;
 
         return warpIdx;
     }
     
 	//--------------------------------------------------------------
-	void Controller::selectClosestControlPoint(const glm::vec2 & pos, bool extendSelection)
+	bool Controller::selectClosestControlPoint(const glm::vec2 & pos, bool extendSelection, float minDist)
 	{
-        
-		// Select the closest control point and deselect all others.
+
+		bool found = false;
+
+		// Select the closest control point and deselect all others depending on extendSelection.
 		for (int i = this->warps.size() - 1; i >= 0; --i)
 		{
 			if (i == this->focusedIndex)
 			{
-
-                size_t temp =  findClosestControlPoint(pos);
-				if(extendSelection){
-					if(this->warps[i]->isControlPointSelected(temp)){
-						this->warps[i]->deselectControlPoint(temp);
+                size_t temp = findClosestControlPoint(pos, minDist);
+				if(temp >= 0 && temp < warps[i]->getNumControlPoints()){
+					if(extendSelection){
+						if(this->warps[i]->isControlPointSelected(temp)){
+							this->warps[i]->deselectControlPoint(temp);
+						}else{
+							this->warps[i]->selectControlPoint(temp, extendSelection);
+						}
 					}else{
 						this->warps[i]->selectControlPoint(temp, extendSelection);
+						found = true;
 					}
 				}else{
-					this->warps[i]->selectControlPoint(temp, extendSelection);
+					ofLogNotice("Controller") << "selectClosestControlPoint() no point closeby!";
 				}
 			}
 		}
+		return found;
 	}
     
 #pragma mark EDITING
@@ -253,6 +288,10 @@ namespace ofxWarp
         return false;
     }
 
+//--------------------------------------------------------------
+void Controller::turnEditingOn(){
+	toggleEditing();
+}
 	//--------------------------------------------------------------
 	void Controller::turnEditingOff()
 	{
@@ -271,20 +310,17 @@ namespace ofxWarp
     {
         editingMode = !editingMode;
         
-        if(!editingMode)
-        {
-            //Set all warps to false
-            for(auto &warp : warps)
-            {
-                if(warp->isEditing())
-                    warp->toggleEditing();
-            }
-		}else{
-			for(auto &warp : warps)
-			{
-				warp->setEditing(true);
-			}
+		//Set all warps to false
+		for(auto &warp : warps){
+			warp->setEditing(false);
 		}
+		focusedIndex = -1;
+
+        if(editingMode){
+			if(warps.size()) warps[0]->setEditing(true);
+			focusedIndex = 0;
+		}
+
     }
     
 #pragma mark MOUSE INTERACTIONS
@@ -313,25 +349,52 @@ namespace ofxWarp
         //Global control of mouse interactions -- this is useful for if you want to have multiple
         //interctions modes (i.e. GUIs) overlayed ontop of the mouse interaction
         if(ignoreMouseInteractions) return;
-        
-        
-        if(ofGetKeyPressed(OF_KEY_LEFT_ALT) && editingMode)
-        {
+
+		//Make sure the warps are in edit mode
+		float minDist = ofGetHeight() / 5;
+
+		//find closest warp and focus is
+        if(ofGetKeyPressed(OF_KEY_LEFT_ALT)){
             //Toggle all warps to false
             for(auto &warp : warps) warp->setEditing(false);
             
-            //Find selected warp
+            //Find selected warp and set it to edit mode
             focusedIndex = findClosestWarp(args);
 			ofLogNotice("Controller") << "closest warp = " << focusedIndex;
 			if (focusedIndex >= 0 && focusedIndex < warps.size()){
             		warps[focusedIndex]->setEditing(true);
 			}
+
+			//if holding alt, select & drag an uselected point to drag it
+			this->selectClosestControlPoint(args, ofGetKeyPressed(OF_KEY_SHIFT), minDist);
+
+			if(ofGetKeyPressed(OF_KEY_SHIFT)){ // if also holding shift, select all pts
+				if (focusedIndex >= 0 && focusedIndex < warps.size()){
+					int n = warps[this->focusedIndex]->getNumControlPoints();
+					for(int i = 0; i < n; i++){
+						warps[this->focusedIndex]->selectControlPoint(i, true);
+					}
+				}
+			}
         }
-        
-        //Make sure the warps are in edit mode
-        if(!areWarpsInEditMode()) return;
-        
-        this->selectClosestControlPoint(args, ofGetKeyPressed(OF_KEY_SHIFT));
+
+		int pt = findClosestControlPoint(args, minDist);
+		if(pt >= 0){ //clicked on point
+			if (focusedIndex >= 0 && focusedIndex < warps.size() && warps[focusedIndex]->isControlPointSelected(pt)){
+				didClickOnCtrlPoint = true;
+			}else{
+				didClickOnCtrlPoint = false;
+			}
+		}else{
+			didClickOnCtrlPoint = false;
+		}
+
+		//if holding alt, click & drag always drags selected points
+		if(ofGetKeyPressed(OF_KEY_LEFT_ALT)) didClickOnCtrlPoint = true;
+
+		mouseDown = true;
+		mouseDownPos = ofVec2f(args.x, args.y);
+		mouseDownTimestamp = ofGetElapsedTimef();
 
 		if (focusedIndex >= 0 && focusedIndex < warps.size()){
 			this->warps[this->focusedIndex]->handleCursorDown(args);
@@ -350,7 +413,9 @@ namespace ofxWarp
         if(!areWarpsInEditMode()) return;
         
         if (focusedIndex >= 0 && focusedIndex < warps.size()){
-            this->warps[this->focusedIndex]->handleCursorDrag(args);
+			if(didClickOnCtrlPoint){ //if we are clik-dragging on point, drag point
+            	this->warps[this->focusedIndex]->handleCursorDrag(args);
+			}
         }
     
 	}
@@ -358,26 +423,26 @@ namespace ofxWarp
 	//--------------------------------------------------------------
 	void Controller::onMouseReleased(ofMouseEventArgs & args)
 	{
-        
-        //Global control of mouse interactions -- this is useful for if you want to have multiple
-        //interctions modes (i.e. GUIs) overlayed ontop of the mouse interaction
-        if(ignoreMouseInteractions) return;
-        
-        //Make sure the warps are in edit mode
-        if(!areWarpsInEditMode()) return;
 
-//        if (ofGetKeyPressed(OF_KEY_SHIFT))
-//        {
-//
-//            //Unselect control point
-//            size_t temp = findClosestControlPoint(args);
-//			if (focusedIndex >= 0 && focusedIndex < warps.size()){
-//            		warps[focusedIndex]->deselectControlPoint(temp);
-//			}
-//			return;
-//        }
+		if(mouseDown){
 
+			//Global control of mouse interactions -- this is useful for if you want to have multiple
+			//interctions modes (i.e. GUIs) overlayed ontop of the mouse interaction
+			if(ignoreMouseInteractions) return;
 
+			//Make sure the warps are in edit mode
+			if(!areWarpsInEditMode()) return;
+
+			float travelDist = mouseDownPos.distance(ofVec2f(args.x, args.y));
+			float downTime = ofGetElapsedTimef() - mouseDownTimestamp;
+			didClickOnCtrlPoint = false;
+			mouseDown = false;
+
+			if(travelDist < 5 && downTime < 0.3){
+				float minDist = ofGetHeight() / 5.0f;
+				this->selectClosestControlPoint(args, ofGetKeyPressed(OF_KEY_SHIFT), minDist);
+			}
+		}
     }
 
 #pragma mark KEY INTERACTIONS
