@@ -124,7 +124,7 @@ namespace ofxWarp
 			{
 				this->controlPoints.push_back(glm::vec2(x / float(this->numControlsX - 1), y / float(this->numControlsY - 1)) * scale + offset);
                 
-                size_t temp = -1;
+                size_t temp = 0;
                 this->selectedIndices.push_back(temp);
                 
                 glm::vec2 tempOffset;
@@ -234,7 +234,7 @@ namespace ofxWarp
 			for (auto i = 0; i < this->controlPoints.size(); ++i)
 			{
 
-                this->queueControlPoint(this->getControlPoint(i) * this->windowSize, selectedIndices[i] != -1);
+                this->queueControlPoint(this->getControlPoint(i) * this->windowSize, selectedIndices[i] != 0);
 			}
 
 			this->drawControlPoints();

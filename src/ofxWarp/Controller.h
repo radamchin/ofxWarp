@@ -76,7 +76,7 @@ namespace ofxWarp
         size_t findClosestWarp(const glm::vec2 & pos);
         
 		//! check all warps and select the closest control point
-		void selectClosestControlPoint(const glm::vec2 & pos);
+		void selectClosestControlPoint(const glm::vec2 & pos, bool extendSelectino);
         
         //!Editing
         void toggleEditing();
@@ -85,7 +85,7 @@ namespace ofxWarp
         
 	protected:
 		std::vector<std::shared_ptr<WarpBase>> warps;
-		size_t focusedIndex; //focused index of focused warp
+		int focusedIndex = -1; //focused index of focused warp
         
         //[[deprecated]]
         //size_t focusedIndexControlPoint;

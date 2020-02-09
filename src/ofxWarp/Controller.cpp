@@ -198,20 +198,23 @@ namespace ofxWarp
         // Find warp and distance to closest control point.
         for (int i = this->warps.size() - 1; i >= 0; --i)
         {
-            float candidate;
-            auto idx = this->warps[i]->findClosestControlPoint(pos, &candidate);
-            if (candidate < distance)
+            float candidateDist = 0;
+            auto idx = this->warps[i]->findClosestControlPoint(pos, &candidateDist);
+			ofLogNotice("Controller::findClosestWarp") << "candidate for warp " << i << " : dist: " << candidateDist << " pt: " << idx;
+            if (candidateDist < distance)
             {
-                distance = candidate;
+                distance = candidateDist;
                 warpIdx = i;
             }
         }
-        
+
+		ofLogNotice("Controller::findClosestWarp") << "final candidate for warp " << warpIdx;
+
         return warpIdx;
     }
     
 	//--------------------------------------------------------------
-	void Controller::selectClosestControlPoint(const glm::vec2 & pos)
+	void Controller::selectClosestControlPoint(const glm::vec2 & pos, bool extendSelection)
 	{
         
 		// Select the closest control point and deselect all others.
@@ -221,7 +224,15 @@ namespace ofxWarp
 			{
 
                 size_t temp =  findClosestControlPoint(pos);
-                this->warps[i]->selectControlPoint(temp);
+				if(extendSelection){
+					if(this->warps[i]->isControlPointSelected(temp)){
+						this->warps[i]->deselectControlPoint(temp);
+					}else{
+						this->warps[i]->selectControlPoint(temp, extendSelection);
+					}
+				}else{
+					this->warps[i]->selectControlPoint(temp, extendSelection);
+				}
 			}
 		}
 	}
@@ -268,7 +279,12 @@ namespace ofxWarp
                 if(warp->isEditing())
                     warp->toggleEditing();
             }
-        }
+		}else{
+			for(auto &warp : warps)
+			{
+				warp->setEditing(true);
+			}
+		}
     }
     
 #pragma mark MOUSE INTERACTIONS
@@ -306,16 +322,20 @@ namespace ofxWarp
             
             //Find selected warp
             focusedIndex = findClosestWarp(args);
-            warps[focusedIndex]->toggleEditing();
-    
+			ofLogNotice("Controller") << "closest warp = " << focusedIndex;
+			if (focusedIndex >= 0 && focusedIndex < warps.size()){
+            		warps[focusedIndex]->setEditing(true);
+			}
         }
         
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
-        this->selectClosestControlPoint(args);
-        this->warps[this->focusedIndex]->handleCursorDown(args);
-        
+        this->selectClosestControlPoint(args, ofGetKeyPressed(OF_KEY_SHIFT));
+
+		if (focusedIndex >= 0 && focusedIndex < warps.size()){
+			this->warps[this->focusedIndex]->handleCursorDown(args);
+		}
        
 	}
 
@@ -329,8 +349,7 @@ namespace ofxWarp
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
-        if (this->focusedIndex < this->warps.size())
-        {
+        if (focusedIndex >= 0 && focusedIndex < warps.size()){
             this->warps[this->focusedIndex]->handleCursorDrag(args);
         }
     
@@ -347,14 +366,16 @@ namespace ofxWarp
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
 
-        if (ofGetKeyPressed(OF_KEY_SHIFT))
-        {
-            
-            //Unselect control point
-            size_t temp = findClosestControlPoint(args);
-            warps[focusedIndex]->deselectControlPoint(temp);
-			return; 
-        }
+//        if (ofGetKeyPressed(OF_KEY_SHIFT))
+//        {
+//
+//            //Unselect control point
+//            size_t temp = findClosestControlPoint(args);
+//			if (focusedIndex >= 0 && focusedIndex < warps.size()){
+//            		warps[focusedIndex]->deselectControlPoint(temp);
+//			}
+//			return;
+//        }
 
 
     }
@@ -377,8 +398,9 @@ namespace ofxWarp
 			}
              */
 		}
-        else if (this->focusedIndex < this->warps.size())
-		{
+        else
+			if (focusedIndex >= 0 && focusedIndex < warps.size()){
+
 			auto warp = this->warps[this->focusedIndex];
 
 			if (args.key == '-')
@@ -413,7 +435,7 @@ namespace ofxWarp
 				{
 					nextIndex = (selectedIndex + 1) % warp->getNumControlPoints();
 				}
-				warp->selectControlPoint(nextIndex);
+				warp->selectControlPoint(nextIndex, false);
 			}
 			//else if (args.key == OF_KEY_UP || args.key == OF_KEY_DOWN || args.key == OF_KEY_LEFT || args.key == OF_KEY_RIGHT)
 			// Can't use OF_KEY_XX, see https://github.com/openframeworks/openFrameworks/issues/5948

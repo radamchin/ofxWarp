@@ -167,7 +167,7 @@ namespace ofxWarp
         for(int i = 0; i < selectedIndices.size(); i++)
         {
             
-            selectedIndices[i] = -1;
+            selectedIndices[i] = 0;
         }
         
 	}
@@ -469,18 +469,28 @@ namespace ofxWarp
 		return this->selectedIndex;
 	}
 
+	bool WarpBase::isControlPointSelected(size_t index){
+		return index == this->selectedIndex;
+	};
+
 	//--------------------------------------------------------------
-	void WarpBase::selectControlPoint(size_t index)
+	void WarpBase::selectControlPoint(size_t index, bool extendSelection)
 	{
 
         if(index >= this->controlPoints.size() || index >= this->selectedIndices.size())
         {
             return;
         }
-        
+
+		if(!extendSelection){
+			for(auto & sel : selectedIndices) sel = 0;
+		}
+
         selectedIndices[index] = 1;
         this->selectedTime = ofGetElapsedTimef();
 	}
+
+
 
 	//--------------------------------------------------------------
 	void WarpBase::deselectControlPoints()
@@ -488,7 +498,7 @@ namespace ofxWarp
 
         for(auto &index : selectedIndices)
         {
-            index = -1;
+            index = 0;
         }
 	}
     
@@ -497,7 +507,7 @@ namespace ofxWarp
         if(index >= selectedIndices.size())
             return;
         
-        selectedIndices[index] = -1;
+        selectedIndices[index] = 0;
     }
 
 	//--------------------------------------------------------------
@@ -641,7 +651,7 @@ namespace ofxWarp
         for(int i = 0; i < controlPoints.size(); i++)
         {
             size_t temp;
-            temp = -1;
+            temp = 0;
             selectedIndices.push_back(temp);
             
             glm::vec2 tempOffSet;

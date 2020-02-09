@@ -173,14 +173,23 @@ namespace ofxWarp
          
         
     }
-    
+
+
+	bool WarpPerspectiveBilinear::isControlPointSelected(size_t index){
+
+		if(index >= 0 && index < selectedIndices.size()){
+			return selectedIndices[index] == 1;
+		}
+		return false;
+	}
+
 	//--------------------------------------------------------------
-	void WarpPerspectiveBilinear::selectControlPoint(size_t index)
+	void WarpPerspectiveBilinear::selectControlPoint(size_t index, bool extendSelection)
 	{
 		// Depending on index, select perspective or bilinear control point.
 		if (this->isCorner(index)) 
 		{
-			this->warpPerspective->selectControlPoint(this->convertIndex(index));
+			this->warpPerspective->selectControlPoint(this->convertIndex(index), extendSelection);
 		}
 		else 
 		{
@@ -189,7 +198,7 @@ namespace ofxWarp
 		}
 
 		// Always select bilinear control point, which we use to keep track of editing.
-		WarpBase::selectControlPoint(index);
+		WarpBase::selectControlPoint(index, extendSelection);
 	}
 
     /*

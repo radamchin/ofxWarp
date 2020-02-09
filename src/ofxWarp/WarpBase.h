@@ -122,7 +122,8 @@ namespace ofxWarp
 		//! get the index of the currently selected control point
 		virtual size_t getSelectedControlPoint() const;
 		//! select one of the control points
-		virtual void selectControlPoint(size_t index);
+		virtual void selectControlPoint(size_t index, bool extendSelection);
+		virtual bool isControlPointSelected(size_t index);
 		//! deselect the selected control point
 		virtual void deselectControlPoints();
         //! deselect the selected control point
@@ -169,7 +170,7 @@ namespace ofxWarp
         void assignNewControlPoints(std::vector<glm::vec2> _controlPoints);
         
         std::vector<size_t> selectedIndices;
-        
+
 	protected:
 		Type type;
 

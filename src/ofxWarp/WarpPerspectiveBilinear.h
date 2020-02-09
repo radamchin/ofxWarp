@@ -29,7 +29,8 @@ namespace ofxWarp
 		//! move the specified control point
 		virtual void moveControlPoint(size_t index, const glm::vec2 & shift) override;
 		//! select one of the control points
-		virtual void selectControlPoint(size_t index) override;
+		virtual void selectControlPoint(size_t index, bool extendSelection) override;
+		virtual bool isControlPointSelected(size_t index) override;
 		//! deselect the selected control point
 		//NEED TO DO: Update this for new deselction process
         //virtual void deselectControlPoint() override;
