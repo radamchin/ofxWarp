@@ -475,6 +475,8 @@ void Controller::turnEditingOn(){
 			return;
 		}
 
+		squareSelect = false;
+
 		if(mouseDown){
 
 			//Global control of mouse interactions -- this is useful for if you want to have multiple
