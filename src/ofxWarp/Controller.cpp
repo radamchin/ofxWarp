@@ -369,7 +369,7 @@ void Controller::turnEditingOn(){
 		//Make sure the warps are in edit mode
 		float minDist = ofGetHeight() / 5;
 
-		if(ofGetKeyPressed('s') && args.button == 0){
+		if((ofGetKeyPressed('s') || ofGetKeyPressed('S'))){
 			squareSelect = true;
 			squareSelectOrigin = args;
 			return;
@@ -421,7 +421,6 @@ void Controller::turnEditingOn(){
 		if (focusedIndex >= 0 && focusedIndex < warps.size()){
 			this->warps[this->focusedIndex]->handleCursorDown(args);
 		}
-       
 	}
 
 	//--------------------------------------------------------------
@@ -436,7 +435,7 @@ void Controller::turnEditingOn(){
         
         if (focusedIndex >= 0 && focusedIndex < warps.size()){
 			if(didClickOnCtrlPoint){ //if we are clik-dragging on point, drag point
-            	this->warps[this->focusedIndex]->handleCursorDrag(args);
+            		this->warps[this->focusedIndex]->handleCursorDrag(args);
 			}
         }
     
@@ -446,7 +445,7 @@ void Controller::turnEditingOn(){
 	void Controller::onMouseReleased(ofMouseEventArgs & args)
 	{
 
-		if(args.button == 0 && squareSelect){
+		if(squareSelect){
 
 			squareSelect = false;
 
