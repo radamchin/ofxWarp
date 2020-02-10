@@ -478,6 +478,7 @@ namespace ofxWarp
 	{
 		// There should be a minimum of 2 control points.
 		n = MAX(2, n);
+		bool addInBetween = (numControlsX * 2 - 1 == n);
 
 		// Prevent overflow.
 		if ((n * this->numControlsY) > MAX_NUM_CONTROL_POINTS) return;
@@ -504,7 +505,7 @@ namespace ofxWarp
                     tempPoints[idx] = glm::vec2(polyline.getPointAtPercent(col * step));
 				}
 			}
-			else 
+			else
 			{
 				// Construct piece-wise catmull-rom spline.
 				ofPolyline polyline;

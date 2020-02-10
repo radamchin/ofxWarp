@@ -4,6 +4,7 @@
 #include "WarpPerspective.h"
 #include "WarpPerspectiveBilinear.h"
 
+#include "ofMain.h"
 #include "GLFW/glfw3.h"
 
 namespace ofxWarp
@@ -191,7 +192,22 @@ namespace ofxWarp
 			return -1;
 		}
     }
-    
+
+void Controller::draw(){
+
+	if(squareSelect){
+		ofNoFill();
+		int val = 128 + 127 * sinf(ofGetFrameNum() * 0.5);
+		ofSetColor(val);
+
+		ofDrawRectangle(squareSelectOrigin.x, squareSelectOrigin.y,
+						ofGetMouseX() - squareSelectOrigin.x,
+						ofGetMouseY() - squareSelectOrigin.y);
+		ofFill();
+		ofSetColor(255);
+	}
+}
+
     //--------------------------------------------------------------
     size_t Controller::findClosestWarp(const glm::vec2 & pos)
     {
@@ -353,6 +369,12 @@ void Controller::turnEditingOn(){
 		//Make sure the warps are in edit mode
 		float minDist = ofGetHeight() / 5;
 
+		if(ofGetKeyPressed('s') && args.button == 0){
+			squareSelect = true;
+			squareSelectOrigin = args;
+			return;
+		}
+
 		//find closest warp and focus is
         if(ofGetKeyPressed(OF_KEY_LEFT_ALT)){
             //Toggle all warps to false
@@ -360,7 +382,7 @@ void Controller::turnEditingOn(){
             
             //Find selected warp and set it to edit mode
             focusedIndex = findClosestWarp(args);
-			ofLogNotice("Controller") << "closest warp = " << focusedIndex;
+			//ofLogNotice("Controller") << "closest warp = " << focusedIndex;
 			if (focusedIndex >= 0 && focusedIndex < warps.size()){
             		warps[focusedIndex]->setEditing(true);
 			}
@@ -408,7 +430,7 @@ void Controller::turnEditingOn(){
         //Global control of mouse interactions -- this is useful for if you want to have multiple
         //interctions modes (i.e. GUIs) overlayed ontop of the mouse interaction
         if(ignoreMouseInteractions) return;
-        
+
         //Make sure the warps are in edit mode
         if(!areWarpsInEditMode()) return;
         
@@ -423,6 +445,36 @@ void Controller::turnEditingOn(){
 	//--------------------------------------------------------------
 	void Controller::onMouseReleased(ofMouseEventArgs & args)
 	{
+
+		if(args.button == 0 && squareSelect){
+
+			squareSelect = false;
+
+			if (focusedIndex >= 0 && focusedIndex < warps.size()){
+				ofRectangle r = ofRectangle(ofMap(squareSelectOrigin.x, 0, ofGetWidth(), 0, warps[focusedIndex]->getSize().x),
+											ofMap(squareSelectOrigin.y, 0, ofGetHeight(), 0, warps[focusedIndex]->getSize().y),
+											ofMap(ofGetMouseX() - squareSelectOrigin.x, 0, ofGetWidth(), 0, warps[focusedIndex]->getSize().x),
+											ofMap(ofGetMouseY() - squareSelectOrigin.y, 0, ofGetHeight(), 0, warps[focusedIndex]->getSize().y)
+											);
+
+				int n = warps[focusedIndex]->getNumControlPoints();
+				if(!ofGetKeyPressed(OF_KEY_SHIFT)){
+					for(int i = 0; i < n; i++){
+						warps[focusedIndex]->deselectControlPoint(i);
+					}
+				}
+				//ofLogNotice() << "r: " << r;
+				for(int i = 0; i < n; i++){
+					auto pt = warps[focusedIndex]->getControlPoint(i) * warps[focusedIndex]->getSize();
+					//ofLogNotice() << pt;
+					if(r.inside(pt.x, pt.y)){
+						warps[focusedIndex]->selectControlPoint(i, true);
+					}
+				}
+			}
+
+			return;
+		}
 
 		if(mouseDown){
 

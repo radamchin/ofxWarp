@@ -150,28 +150,30 @@ namespace ofxWarp
          {
             if(selectedIndices[i] == 1)
              {
-                 
-                 if(isCorner(i))
-                 {
-                     warpPerspective->moveControlPoint(convertIndex(i), shift);
-                 }
-                 else
-                 {
-                     const glm::vec2 & pos = getControlPoint(i) + shift;
-                     
-                     auto cp = pos * this->windowSize;
-                     auto pt = this->warpPerspective->getTransformInverted() * glm::vec4(cp.x, cp.y, 0.0f, 1.0f);
-                     
-                     if (pt.w != 0) pt.w = 1.0f / pt.w;
-                     pt *= pt.w;
-                     
-                     WarpBase::setControlPoint(i, glm::vec2(pt.x, pt.y) / this->warpPerspective->getSize());
-                 }
-                
+
+				 moveControlPoint(i, shift);
+//                 if(isCorner(i))
+//                 {
+//                     warpPerspective->moveControlPoint(convertIndex(i), shift);
+//                 }
+//                 else
+//                 {
+//                     const glm::vec2 & pos = getControlPoint(i) + shift;
+//
+//                     auto cp = pos * this->windowSize;
+//                     auto pt = this->warpPerspective->getTransformInverted() * glm::vec4(cp.x, cp.y, 0.0f, 1.0f);
+//
+//                     if (pt.w != 0) pt.w = 1.0f / pt.w;
+//                     pt *= pt.w;
+//
+//                     WarpBase::setControlPoint(i, glm::vec2(pt.x, pt.y) / this->warpPerspective->getSize());
+//
+//					 auto pt = getControlPoint(convertIndex(i));
+//					 this->setControlPoint(convertIndex(i), pt + shift);
+//
+//                 }
              }
          }
-         
-        
     }
 
 

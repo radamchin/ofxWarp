@@ -11,6 +11,8 @@ namespace ofxWarp
 		Controller();
 		~Controller();
 
+		void draw();
+		
 		//! write a settings json file
 		bool saveSettings(const std::string & filePath);
 		//! read a settings json file
@@ -91,6 +93,9 @@ namespace ofxWarp
 		float mouseDownTimestamp = 0;
 
 		bool didClickOnCtrlPoint = false;
+
+		bool squareSelect = false;
+		ofVec2f squareSelectOrigin;
 
         
 	protected:

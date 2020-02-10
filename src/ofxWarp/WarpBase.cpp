@@ -657,18 +657,12 @@ namespace ofxWarp
         controlPoints = _controlPoints;
         
         //Clear all selected indices
-        selectedIndices.erase (selectedIndices.begin(), selectedIndices.end());
-        
+		selectedIndices.clear();
         
         //Add new indices
-        for(int i = 0; i < controlPoints.size(); i++)
-        {
-            size_t temp;
-            temp = 0;
-            selectedIndices.push_back(temp);
-            
-            glm::vec2 tempOffSet;
-            selectedOffsets.push_back(tempOffSet);
+        for(int i = 0; i < controlPoints.size(); i++){
+            selectedIndices.push_back(0);
+            selectedOffsets.push_back(glm::vec2());
         }
         
     }
