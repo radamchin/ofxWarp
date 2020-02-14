@@ -178,16 +178,18 @@ namespace ofxWarp
         // Find warp and distance to closest control point.
         for (int i = this->warps.size() - 1; i >= 0; --i)
         {
-            float candidate;
-            auto idx = this->warps[i]->findClosestControlPoint(pos, &candidate);
-            if (candidate < distance && this->warps[i]->isEditing())
-            {
-                distance = candidate;
-                pointIdx = idx;
-            }
+			if(i == focusedIndex){
+				float candidate;
+				auto idx = this->warps[i]->findClosestControlPoint(pos, &candidate);
+				if (candidate < distance && this->warps[i]->isEditing())
+				{
+					distance = candidate;
+					pointIdx = idx;
+				}
+			}
         }
 		if(distance < maxDist){
-        	return pointIdx;
+        		return pointIdx;
 		}else{
 			return -1;
 		}
@@ -304,10 +306,11 @@ void Controller::draw(){
         return false;
     }
 
-//--------------------------------------------------------------
-void Controller::turnEditingOn(){
-	toggleEditing();
-}
+	//--------------------------------------------------------------
+	void Controller::turnEditingOn(){
+		toggleEditing();
+	}
+
 	//--------------------------------------------------------------
 	void Controller::turnEditingOff()
 	{
@@ -319,6 +322,7 @@ void Controller::turnEditingOn(){
 			if (warp->isEditing())
 				warp->toggleEditing();
 		}
+		focusedIndex = -1;
 	}
     
     //--------------------------------------------------------------
@@ -336,7 +340,6 @@ void Controller::turnEditingOn(){
 			if(warps.size()) warps[0]->setEditing(true);
 			focusedIndex = 0;
 		}
-
     }
     
 #pragma mark MOUSE INTERACTIONS
