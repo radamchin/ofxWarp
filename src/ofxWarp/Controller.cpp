@@ -534,7 +534,7 @@ void Controller::draw(){
 			}
 			else if (args.key == 'r')
 			{
-				warp->reset();
+				//warp->reset(); // Disable reset (accidentally press 'r' too often)
 			}
 			else if (args.key == OF_KEY_TAB)
 			{
@@ -562,7 +562,14 @@ void Controller::draw(){
 			// Can't use OF_KEY_XX, see https://github.com/openframeworks/openFrameworks/issues/5948
 			else if (args.keycode == GLFW_KEY_UP || args.keycode == GLFW_KEY_DOWN || args.keycode == GLFW_KEY_LEFT || args.keycode == GLFW_KEY_RIGHT)
 			{
-				auto step = ofGetKeyPressed(OF_KEY_SHIFT) ? 10.0f : 0.5f;
+				// Key Combination		Step (px)
+				// { }					15
+				// { SHIFT }			3
+				// { ALT }				0.5
+				// { SHIFT + ALT }		0.1
+				bool bShift = ofGetKeyPressed(OF_KEY_SHIFT);
+				bool bAlt = ofGetKeyPressed(OF_KEY_ALT);
+				float step = bShift ? (bAlt ? 0.1 : 3.0) : (bAlt ? 0.5 : 15.0);
 				auto shift = glm::vec2(0.0f);
 				if (args.key == OF_KEY_UP)
 				{
