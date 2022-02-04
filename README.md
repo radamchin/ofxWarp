@@ -21,6 +21,7 @@ Image warping, as used in this addon, is the process of manipulating an image so
 
 * openFrameworks 0.9 and up
 * OpenGL 3 and up (programmable pipeline)
+* **ADDED** OpenGL 2 compatibility (#version 120 shaders included in shaders/ofxWarp/GL2 folder)
 * The included shaders only work with normalized textures (`GL_TEXTURE_2D`) but can be easily modified to work with rectangle textures
 
 #### Controls

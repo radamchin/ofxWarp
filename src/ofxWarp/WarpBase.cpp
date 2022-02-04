@@ -31,6 +31,11 @@ namespace ofxWarp
 		, edges(0.0f)
 	{
 		this->windowSize = glm::vec2(ofGetWidth(), ofGetHeight());
+        
+        if(!ofIsGLProgrammableRenderer()) {
+            this->setShaderPath( std::filesystem::path("shaders") / "ofxWarp" / "GL2" );
+        }
+        
 	}
 	
 	//--------------------------------------------------------------

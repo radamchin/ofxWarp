@@ -4,7 +4,10 @@
 void ofApp::setup()
 {
 	ofSetLogLevel(OF_LOG_NOTICE);
+    
+	if(ofIsGLProgrammableRenderer()) {
 	ofDisableArbTex();
+    }
 	ofBackground(ofColor::black);
 
 	ofImage image;
